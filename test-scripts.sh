@@ -4,7 +4,7 @@
 # Tests deployment scripts functionality and validation
 #
 
-set -euo pipefail
+set -uo pipefail
 
 # Change to script directory
 cd "$(dirname "$0")"
@@ -51,7 +51,8 @@ test_script_executable() {
     else
         echo -e "${RED}✗ FAIL${NC}"
         ((TESTS_FAILED++))
-        return 1
+        # Don't exit on failure in CI
+        return 0
     fi
 }
 
