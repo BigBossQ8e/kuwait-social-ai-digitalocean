@@ -1,0 +1,50 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: "en-US"
+early_access: false
+
+reviews:
+  # Enable high-level summary of the PR
+  high_level_summary: true
+  
+  # Enable poem generation in the PR summary
+  poem: false
+  
+  # Enable review status badges
+  review_status: true
+  
+  # Enable code suggestions
+  collapse_suggestions: false
+  
+  # Enable security and best practices checks
+  request_changes_workflow: true
+  
+  # Tools and technologies to focus on
+  tools:
+    - bash
+    - docker
+    - nginx
+    - postgresql
+    - redis
+  
+path_instructions:
+  - path: "scripts/**/*.sh"
+    instructions: |
+      - Check for proper error handling and exit codes
+      - Verify security best practices (no hardcoded secrets)
+      - Ensure proper input validation
+      - Check for shellcheck compliance
+      - Verify idempotency where applicable
+      
+  - path: "configs/**/*"
+    instructions: |
+      - Verify configuration security
+      - Check for proper environment variable usage
+      - Ensure no hardcoded credentials
+      
+  - path: "*.md"
+    instructions: |
+      - Check for clarity and completeness
+      - Verify all commands and examples work
+      - Ensure proper markdown formatting
