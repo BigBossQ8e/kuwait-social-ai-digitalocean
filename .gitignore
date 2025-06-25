@@ -1,0 +1,76 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Credentials and secrets
+*.key
+*.pem
+*.crt
+credentials.txt
+*-credentials.txt
+.kuwait-social-ai-do-*.txt
+
+# SSH keys
+*.ppk
+id_rsa*
+id_ed25519*
+kuwait-social-ai-*
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+backups/
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-*
+
+# Testing
+coverage/
+.coverage
+*.cover
+.pytest_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# OS files
+Thumbs.db
+Desktop.ini
