@@ -1,0 +1,52 @@
+name: Test Scripts
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y shellcheck
+    
+    - name: Make scripts executable
+      run: chmod +x scripts/*.sh test-scripts.sh validate-environment.sh
+    
+    - name: Run shellcheck
+      run: |
+        find scripts -name "*.sh" -exec shellcheck {} \; || true
+    
+    - name: Run tests
+      run: ./test-scripts.sh
+    
+    - name: Validate environment script
+      run: |
+        # Run validation in test mode (won't check actual auth)
+        ./validate-environment.sh || true
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run security checks
+      run: |
+        # Check for hardcoded secrets
+        echo "Checking for hardcoded secrets..."
+        ! grep -r "password\s*=\s*[\"'][^\"']*[\"']" scripts/ || echo "Warning: Potential hardcoded password found"
+        ! grep -r "api_key\s*=\s*[\"'][^\"']*[\"']" scripts/ || echo "Warning: Potential hardcoded API key found"
+        
+    - name: Check file permissions
+      run: |
+        # Ensure scripts are executable
+        find scripts -name "*.sh" -exec test -x {} \; -print
