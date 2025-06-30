@@ -520,8 +520,8 @@ class PrayerTimesService:
             self.logger.error(f"Failed to send admin notification: {str(e)}")
 
 
-# Singleton instance
-prayer_times_service = PrayerTimesService()
+# Note: No singleton instance created here
+# Use get_prayer_times_service() from services.container instead
 
 
 # Convenience functions

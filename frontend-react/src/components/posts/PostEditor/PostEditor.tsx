@@ -40,6 +40,7 @@ import { MediaUpload } from './MediaUpload';
 import { HashtagInput } from './HashtagInput';
 import { PostPreview } from './PostPreview';
 import { TemplateSelector } from './TemplateSelector';
+import { useAIContent } from '../../../hooks/useAIContent';
 import type { PostDraft } from '../../../types/api.types';
 
 interface PostEditorProps {
@@ -56,6 +57,17 @@ export const PostEditor: React.FC<PostEditorProps> = ({
   mode = 'create',
 }) => {
   const language = useAppSelector(selectLanguage);
+  const { 
+    generateContent, 
+    translateContent,
+    generateHashtags: generateHashtagsAI,
+    loading: aiLoading,
+    error: aiError,
+    generatedContent,
+    translatedText,
+    suggestedHashtags,
+    clearError: clearAIError
+  } = useAIContent();
   
   // Form state
   const [caption, setCaption] = useState(initialData?.caption || '');
@@ -67,8 +79,8 @@ export const PostEditor: React.FC<PostEditorProps> = ({
   const [mediaFiles, setMediaFiles] = useState<any[]>(initialData?.media_files || []);
   const [scheduledTime, setScheduledTime] = useState(initialData?.scheduled_time || '');
   const [showPreview, setShowPreview] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aiPrompt, setAiPrompt] = useState('');
 
   // Rich text editor for English caption
   const editor = useEditor({
@@ -149,53 +161,61 @@ export const PostEditor: React.FC<PostEditorProps> = ({
   };
 
   const handleGenerateContent = async () => {
-    setIsGenerating(true);
-    setError(null);
-    
-    try {
-      // Mock AI content generation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const generatedContent = language === 'ar' 
-        ? 'محتوى تم إنشاؤه بواسطة الذكاء الاصطناعي للأعمال في الكويت 🚀'
-        : 'AI-generated content for Kuwait businesses 🚀';
-      
-      if (editor) {
-        editor.commands.setContent(generatedContent);
-      }
-      setCaption(generatedContent);
-    } catch (err) {
+    if (!aiPrompt.trim()) {
       setError(language === 'ar' 
-        ? 'فشل في توليد المحتوى' 
-        : 'Failed to generate content'
+        ? 'يرجى إدخال وصف للمحتوى المطلوب' 
+        : 'Please enter a description for the content you want'
       );
-    } finally {
-      setIsGenerating(false);
+      return;
     }
+    
+    clearAIError();
+    
+    await generateContent({
+      prompt: aiPrompt,
+      platform: selectedPlatforms[0] as any || 'instagram',
+      tone: 'professional',
+      include_arabic: true,
+      include_hashtags: true
+    });
   };
+
+  // Update caption when AI generates content
+  React.useEffect(() => {
+    if (generatedContent) {
+      if (editor && generatedContent.content) {
+        editor.commands.setContent(generatedContent.content);
+        setCaption(generatedContent.content);
+      }
+      if (editorAr && generatedContent.arabic_content) {
+        editorAr.commands.setContent(generatedContent.arabic_content);
+        setCaptionAr(generatedContent.arabic_content);
+      }
+      if (generatedContent.hashtags) {
+        setHashtags(prev => [...new Set([...prev, ...generatedContent.hashtags])].slice(0, 30));
+      }
+    }
+  }, [generatedContent, editor, editorAr]);
 
   const handleTranslate = async () => {
     if (!caption) return;
     
-    setIsGenerating(true);
-    try {
-      // Mock translation - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const translatedContent = 'ترجمة: ' + caption;
-      if (editorAr) {
-        editorAr.commands.setContent(translatedContent);
-      }
-      setCaptionAr(translatedContent);
-    } catch (err) {
-      setError(language === 'ar' 
-        ? 'فشل في الترجمة' 
-        : 'Translation failed'
-      );
-    } finally {
-      setIsGenerating(false);
-    }
+    clearAIError();
+    
+    await translateContent({
+      text: caption,
+      source_lang: 'en',
+      target_lang: 'ar'
+    });
   };
+
+  // Update Arabic caption when translation completes
+  React.useEffect(() => {
+    if (translatedText && editorAr) {
+      editorAr.commands.setContent(translatedText);
+      setCaptionAr(translatedText);
+    }
+  }, [translatedText, editorAr]);
   
   const handleTemplateContent = (content: { content_en: string; content_ar?: string; hashtags: string[] }) => {
     if (editor) {
@@ -308,6 +328,44 @@ export const PostEditor: React.FC<PostEditorProps> = ({
               />
             </Box>
             
+            {/* AI Content Generation */}
+            <Box mb={3}>
+              <Typography variant="subtitle2" gutterBottom>
+                {language === 'ar' ? 'توليد المحتوى بالذكاء الاصطناعي' : 'AI Content Generation'}
+              </Typography>
+              <Box display="flex" gap={1} alignItems="flex-start">
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  placeholder={language === 'ar' 
+                    ? 'اكتب وصفاً للمحتوى الذي تريد إنشاءه (مثال: عرض خاص لشهر رمضان لمطعمنا)'
+                    : 'Describe the content you want to create (e.g., Special Ramadan offer for our restaurant)'
+                  }
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  disabled={aiLoading}
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleGenerateContent}
+                  disabled={aiLoading || !aiPrompt.trim()}
+                  startIcon={aiLoading ? null : <AutoAwesome />}
+                  sx={{ minWidth: 120, height: 56 }}
+                >
+                  {aiLoading 
+                    ? (language === 'ar' ? 'جاري التوليد...' : 'Generating...')
+                    : (language === 'ar' ? 'توليد' : 'Generate')
+                  }
+                </Button>
+              </Box>
+              {(aiError || error) && (
+                <Alert severity="error" sx={{ mt: 1 }} onClose={() => { setError(null); clearAIError(); }}>
+                  {aiError || error}
+                </Alert>
+              )}
+            </Box>
+            
             {/* Caption Editor */}
             <Box mb={3}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -315,20 +373,11 @@ export const PostEditor: React.FC<PostEditorProps> = ({
                   {language === 'ar' ? 'المحتوى' : 'Content'}
                 </Typography>
                 <Box display="flex" gap={1}>
-                  <Tooltip title={language === 'ar' ? 'توليد بالذكاء الاصطناعي' : 'AI Generate'}>
-                    <IconButton 
-                      size="small" 
-                      onClick={handleGenerateContent}
-                      disabled={isGenerating}
-                    >
-                      <AutoAwesome />
-                    </IconButton>
-                  </Tooltip>
                   <Tooltip title={language === 'ar' ? 'ترجمة' : 'Translate'}>
                     <IconButton 
                       size="small" 
                       onClick={handleTranslate}
-                      disabled={!caption || isGenerating}
+                      disabled={!caption || aiLoading}
                     >
                       <Translate />
                     </IconButton>

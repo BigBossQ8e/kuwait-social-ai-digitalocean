@@ -1,0 +1,1 @@
+export { PostCreator as default } from './PostCreator';

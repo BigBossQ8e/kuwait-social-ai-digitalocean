@@ -651,5 +651,5 @@ class CompetitorAnalysisService:
         return recommendations
 
 
-# Singleton instance
-competitor_analysis_service = CompetitorAnalysisService()
+# Note: No singleton instance created here
+# Use get_competitor_analysis_service() from services.container instead

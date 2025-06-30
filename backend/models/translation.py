@@ -1,27 +1,25 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship
-from models.base import Base
+from extensions import db
 
-class Translation(Base):
+class Translation(db.Model):
     __tablename__ = 'translations'
     
-    id = Column(Integer, primary_key=True)
-    key = Column(String(255), nullable=False)
-    locale = Column(String(10), nullable=False)
-    value = Column(Text, nullable=False)
-    category = Column(String(100))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_by = Column(Integer, ForeignKey('users.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(255), nullable=False)
+    locale = db.Column(db.String(10), nullable=False)
+    value = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     # Relationships
-    creator = relationship('User', foreign_keys=[created_by])
-    history = relationship('TranslationHistory', back_populates='translation', cascade='all, delete-orphan')
+    creator = db.relationship('User', foreign_keys=[created_by])
+    history = db.relationship('TranslationHistory', back_populates='translation', cascade='all, delete-orphan')
     
     # Unique constraint
     __table_args__ = (
-        UniqueConstraint('key', 'locale', name='_key_locale_uc'),
+        db.UniqueConstraint('key', 'locale', name='_key_locale_uc'),
     )
     
     def to_dict(self):
@@ -37,19 +35,19 @@ class Translation(Base):
         }
 
 
-class TranslationHistory(Base):
+class TranslationHistory(db.Model):
     __tablename__ = 'translation_history'
     
-    id = Column(Integer, primary_key=True)
-    translation_id = Column(Integer, ForeignKey('translations.id', ondelete='CASCADE'), nullable=False)
-    old_value = Column(Text)
-    new_value = Column(Text)
-    changed_by = Column(Integer, ForeignKey('users.id'))
-    changed_at = Column(DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    translation_id = db.Column(db.Integer, db.ForeignKey('translations.id', ondelete='CASCADE'), nullable=False)
+    old_value = db.Column(db.Text)
+    new_value = db.Column(db.Text)
+    changed_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    changed_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relationships
-    translation = relationship('Translation', back_populates='history')
-    changer = relationship('User', foreign_keys=[changed_by])
+    translation = db.relationship('Translation', back_populates='history')
+    changer = db.relationship('User', foreign_keys=[changed_by])
     
     def to_dict(self):
         return {

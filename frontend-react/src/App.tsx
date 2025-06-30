@@ -22,6 +22,9 @@ import { useAppSelector } from './store';
 import { selectTheme, selectDirection } from './store/slices/uiSlice';
 import { selectCurrentUser } from './store/slices/authSlice';
 
+// Lazy load the PostCreator component
+const PostCreator = React.lazy(() => import('./pages/Posts'));
+
 // Create RTL cache for Arabic support
 const rtlCache = createCache({
   key: 'muirtl',
@@ -166,10 +169,9 @@ const AppContent: React.FC = () => {
                   <ProtectedRoute requiredRole="client">
                     <ErrorBoundary>
                       <AppLayout>
-                        <Box p={3}>
-                          <h1>Posts Management - Coming Soon</h1>
-                          <p>Post creation and management will be implemented in Phase 3.</p>
-                        </Box>
+                        <React.Suspense fallback={<Box p={3}>Loading...</Box>}>
+                          <PostCreator />
+                        </React.Suspense>
                       </AppLayout>
                     </ErrorBoundary>
                   </ProtectedRoute>

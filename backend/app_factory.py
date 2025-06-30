@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import extensions from centralized location
-from extensions import db, migrate, jwt, limiter, celery
+from extensions import db, migrate, jwt, limiter
 
 
 def create_app(config_name='development'):
@@ -41,7 +41,7 @@ def create_app(config_name='development'):
     register_error_handlers(app)
     
     # Configure Celery
-    configure_celery(app)
+    # configure_celery(app)  # Disabled - celery not configured
     
     return app
 
@@ -133,6 +133,7 @@ def register_blueprints(app):
     from routes.auth import auth_bp
     from routes.owner import owner_bp
     from routes.admin import admin_bp
+    from routes.admin_clients import admin_clients_bp
     from routes.client import client_bp
     from routes.content import content_bp
     from routes.content_enhanced import content_enhanced_bp
@@ -142,10 +143,12 @@ def register_blueprints(app):
     from routes.telegram import telegram_bp
     from routes.payments import payments_bp
     from routes.prayer_times import prayer_times_bp
+    from routes.ai_content import ai_content_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(owner_bp, url_prefix='/api/owner')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(admin_clients_bp, url_prefix='/api')
     app.register_blueprint(client_bp, url_prefix='/api/client')
     app.register_blueprint(content_bp, url_prefix='/api/content')
     app.register_blueprint(content_enhanced_bp, url_prefix='/api/content-fb')
@@ -155,6 +158,7 @@ def register_blueprints(app):
     app.register_blueprint(payments_bp, url_prefix='/api/payments')
     app.register_blueprint(prayer_times_bp, url_prefix='/api/prayer-times')
     app.register_blueprint(translations_bp, url_prefix='/api')
+    app.register_blueprint(ai_content_bp)  # New AI content routes
 
 
 def register_error_handlers(app):
@@ -197,16 +201,4 @@ def register_error_handlers(app):
         }), 429
 
 
-def configure_celery(app):
-    """Configure Celery with app context"""
-    
-    celery.conf.update(app.config)
-    
-    class ContextTask(celery.Task):
-        """Make celery tasks work with Flask app context"""
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-    
-    celery.Task = ContextTask
-    return celery# Force reload
+# Celery configuration removed - not currently used

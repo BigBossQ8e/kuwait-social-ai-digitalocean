@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Post Editor Preview</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Kufi+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', 'Noto Kufi Arabic', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1976d2;
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-item .material-icons {
+            margin-right: 12px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        /* Post Editor */
+        .editor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .editor-header {
+            margin-bottom: 24px;
+        }
+        
+        .editor-header h1 {
+            font-size: 32px;
+            font-weight: 500;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+        
+        .editor-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* Platform Selector */
+        .platform-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .platform-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .platform-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .platform-btn:hover {
+            border-color: #1976d2;
+        }
+        
+        .platform-btn.active {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        /* Content Editor */
+        .content-editor {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .editor-tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .editor-tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            position: relative;
+            color: #666;
+        }
+        
+        .editor-tab.active {
+            color: #1976d2;
+        }
+        
+        .editor-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #1976d2;
+        }
+        
+        .editor-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .action-btn.primary {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .action-btn.primary:hover {
+            background: #1565c0;
+        }
+        
+        .text-editor {
+            min-height: 200px;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+        
+        .text-editor:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        
+        /* Media Upload */
+        .media-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: #1976d2;
+            background: #f8f9fa;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+        
+        .media-preview {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .media-item {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .media-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Hashtags */
+        .hashtag-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        
+        .hashtag-input-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .hashtag-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .hashtag-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .hashtag-chip {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 6px 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .hashtag-remove {
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* Action Buttons */
+        .editor-actions-bottom {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 32px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+        
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #388e3c;
+        }
+        
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .section-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">Kuwait Social AI</div>
+            <nav>
+                <div class="nav-item">
+                    <span class="material-icons">dashboard</span>
+                    Dashboard
+                </div>
+                <div class="nav-item active">
+                    <span class="material-icons">post_add</span>
+                    Posts
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">analytics</span>
+                    Analytics
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">trending_up</span>
+                    Competitors
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">campaign</span>
+                    Campaigns
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">schedule</span>
+                    Schedule
+                </div>
+                <div class="nav-item">
+                    <span class="material-icons">settings</span>
+                    Settings
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="editor-container">
+                <!-- Header -->
+                <div class="editor-header">
+                    <h1>Create New Post</h1>
+                    <p>Create engaging content for your social media channels</p>
+                </div>
+                
+                <!-- Platform Selector -->
+                <div class="platform-selector">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-title">Select Platforms</div>
+                            <div class="section-subtitle">Choose where to publish your content</div>
+                        </div>
+                    </div>
+                    <div class="platform-buttons">
+                        <button class="platform-btn active">
+                            <span class="material-icons">photo_camera</span>
+                            Instagram
+                        </button>
+                        <button class="platform-btn">
+                            <span class="material-icons">chat</span>
+                            Snapchat
+                        </button>
+                        <button class="platform-btn">
+                            <span class="material-icons">tag</span>
+                            Twitter
+                        </button>
+                        <button class="platform-btn">
+                            <span class="material-icons">play_circle</span>
+                            TikTok
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Content Editor -->
+                <div class="content-editor">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-title">Post Content</div>
+                            <div class="section-subtitle">Write your message in English and Arabic</div>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-tabs">
+                        <button class="editor-tab active">English</button>
+                        <button class="editor-tab">العربية</button>
+                    </div>
+                    
+                    <div class="editor-actions">
+                        <button class="action-btn primary">
+                            <span class="material-icons">auto_awesome</span>
+                            AI Generate
+                        </button>
+                        <button class="action-btn">
+                            <span class="material-icons">translate</span>
+                            Translate
+                        </button>
+                        <button class="action-btn">
+                            <span class="material-icons">text_fields</span>
+                            Templates
+                        </button>
+                    </div>
+                    
+                    <textarea class="text-editor" placeholder="Write your post content here... Share your story, promote your business, or engage with your audience."></textarea>
+                </div>
+                
+                <!-- Media Upload -->
+                <div class="media-section">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-title">Media</div>
+                            <div class="section-subtitle">Add images or videos to your post</div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-area">
+                        <div class="upload-icon material-icons">add_photo_alternate</div>
+                        <div style="font-size: 18px; margin-bottom: 8px;">Drop files here or click to upload</div>
+                        <div style="color: #666; font-size: 14px;">Supports JPG, PNG, MP4 (max 10MB)</div>
+                    </div>
+                    
+                    <div class="media-preview">
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/150/1976d2/ffffff?text=Sample+1" alt="Sample">
+                            <button class="media-remove material-icons">close</button>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/150/4caf50/ffffff?text=Sample+2" alt="Sample">
+                            <button class="media-remove material-icons">close</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hashtags -->
+                <div class="hashtag-section">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-title">Hashtags</div>
+                            <div class="section-subtitle">Add relevant hashtags to increase reach</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hashtag-input-container">
+                        <input type="text" class="hashtag-input" placeholder="Type hashtag and press Enter">
+                        <button class="action-btn primary">
+                            <span class="material-icons">tag</span>
+                            Add
+                        </button>
+                    </div>
+                    
+                    <div class="hashtag-list">
+                        <div class="hashtag-chip">
+                            #KuwaitBusiness
+                            <span class="hashtag-remove material-icons">close</span>
+                        </div>
+                        <div class="hashtag-chip">
+                            #Q8
+                            <span class="hashtag-remove material-icons">close</span>
+                        </div>
+                        <div class="hashtag-chip">
+                            #KuwaitFood
+                            <span class="hashtag-remove material-icons">close</span>
+                        </div>
+                        <div class="hashtag-chip">
+                            #الكويت
+                            <span class="hashtag-remove material-icons">close</span>
+                        </div>
+                        <div class="hashtag-chip">
+                            #مطاعم_الكويت
+                            <span class="hashtag-remove material-icons">close</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="editor-actions-bottom">
+                    <button class="btn btn-secondary">
+                        <span class="material-icons">close</span>
+                        Cancel
+                    </button>
+                    <button class="btn btn-secondary">
+                        <span class="material-icons">save</span>
+                        Save Draft
+                    </button>
+                    <button class="btn btn-secondary">
+                        <span class="material-icons">schedule</span>
+                        Schedule
+                    </button>
+                    <button class="btn btn-success">
+                        <span class="material-icons">send</span>
+                        Publish Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

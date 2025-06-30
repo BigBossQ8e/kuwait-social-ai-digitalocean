@@ -18,6 +18,10 @@ from config.platform_config import PlatformConfig
 
 class ContentGenerator:
     def __init__(self):
+        # Ensure environment variables are loaded
+        from dotenv import load_dotenv
+        load_dotenv()
+        
         self.api_key = os.getenv('OPENAI_API_KEY')
         if not self.api_key:
             raise AIServiceException(service='OpenAI', reason='API key not configured')

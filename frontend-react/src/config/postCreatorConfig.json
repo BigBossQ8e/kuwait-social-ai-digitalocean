@@ -1,0 +1,275 @@
+{
+  "appTitle": "Kuwait Social AI - Smart Post Creator",
+  "version": "1.0.0",
+  "defaultLanguage": "en",
+  "promptsData": {
+    "dishPromotion": {
+      "id": "dishPromotion",
+      "title": "Dish Promotion",
+      "icon": "🍽️",
+      "prompts": {
+        "fridayLunchSpecial": {
+          "id": "fridayLunchSpecial",
+          "title": "Friday Lunch Special",
+          "prompt": "Create an enticing Instagram post for a Friday lunch special featuring {{dishName}} at {{restaurantName}} in {{location}}. The dish is {{dishDescription}} and costs {{price}} KD. Emphasize the weekend vibes and family gathering aspect typical of Kuwaiti Fridays. Include relevant emojis and a call to action.",
+          "inputs": [
+            {
+              "id": "dishName",
+              "label": "Dish Name",
+              "type": "text",
+              "placeholder": "e.g., Machboos Laham",
+              "required": true
+            },
+            {
+              "id": "dishDescription",
+              "label": "Dish Description",
+              "type": "textarea",
+              "placeholder": "Brief description of the dish",
+              "required": true
+            },
+            {
+              "id": "restaurantName",
+              "label": "Restaurant Name",
+              "type": "text",
+              "placeholder": "Your restaurant name",
+              "required": true
+            },
+            {
+              "id": "location",
+              "label": "Location",
+              "type": "text",
+              "placeholder": "e.g., Salmiya, Kuwait City",
+              "required": true
+            },
+            {
+              "id": "price",
+              "label": "Price (KD)",
+              "type": "number",
+              "placeholder": "e.g., 4.5",
+              "required": true
+            }
+          ]
+        },
+        "newDishLaunch": {
+          "id": "newDishLaunch",
+          "title": "New Dish Launch",
+          "prompt": "Generate an exciting announcement post for a new dish {{dishName}} launching at {{restaurantName}}. The dish features {{ingredients}} and is {{cuisine}} cuisine. Price: {{price}} KD. Create buzz and curiosity while highlighting what makes this dish unique.",
+          "inputs": [
+            {
+              "id": "dishName",
+              "label": "New Dish Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "ingredients",
+              "label": "Key Ingredients",
+              "type": "text",
+              "placeholder": "e.g., saffron, cardamom, tender lamb",
+              "required": true
+            },
+            {
+              "id": "cuisine",
+              "label": "Cuisine Type",
+              "type": "select",
+              "options": ["Kuwaiti", "Lebanese", "Indian", "Italian", "Asian", "International"],
+              "required": true
+            },
+            {
+              "id": "restaurantName",
+              "label": "Restaurant Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "price",
+              "label": "Price (KD)",
+              "type": "number",
+              "required": true
+            }
+          ]
+        }
+      }
+    },
+    "eventPromotion": {
+      "id": "eventPromotion",
+      "title": "Event Promotion",
+      "icon": "🎉",
+      "prompts": {
+        "ramadanIftar": {
+          "id": "ramadanIftar",
+          "title": "Ramadan Iftar Special",
+          "prompt": "Create a warm, inviting post for Ramadan Iftar at {{restaurantName}}. Highlight the {{buffetOrSetMenu}} option priced at {{price}} KD per person. Mention special dishes like {{specialDishes}} and the spiritual ambiance. Include Ramadan greetings and encourage early bookings.",
+          "inputs": [
+            {
+              "id": "restaurantName",
+              "label": "Restaurant Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "buffetOrSetMenu",
+              "label": "Menu Type",
+              "type": "select",
+              "options": ["Buffet", "Set Menu", "Both Options Available"],
+              "required": true
+            },
+            {
+              "id": "price",
+              "label": "Price per Person (KD)",
+              "type": "number",
+              "required": true
+            },
+            {
+              "id": "specialDishes",
+              "label": "Special Dishes",
+              "type": "text",
+              "placeholder": "e.g., Harees, Thareed, Qatayef",
+              "required": true
+            }
+          ]
+        },
+        "nationalDayOffer": {
+          "id": "nationalDayOffer",
+          "title": "National Day Celebration",
+          "prompt": "Create a patriotic post celebrating Kuwait National Day at {{restaurantName}}. Offer: {{offerDetails}}. Express national pride and unity. Use Kuwait flag colors (🇰🇼) and patriotic language. Valid {{validityPeriod}}.",
+          "inputs": [
+            {
+              "id": "restaurantName",
+              "label": "Restaurant Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "offerDetails",
+              "label": "Offer Details",
+              "type": "textarea",
+              "placeholder": "e.g., 26% discount on all meals",
+              "required": true
+            },
+            {
+              "id": "validityPeriod",
+              "label": "Validity Period",
+              "type": "text",
+              "placeholder": "e.g., Feb 25-26",
+              "required": true
+            }
+          ]
+        }
+      }
+    },
+    "engagement": {
+      "id": "engagement",
+      "title": "Customer Engagement",
+      "icon": "💬",
+      "prompts": {
+        "weekendQuestion": {
+          "id": "weekendQuestion",
+          "title": "Weekend Engagement Question",
+          "prompt": "Create an engaging weekend question post for {{restaurantName}} followers. Ask about their favorite {{topic}} in a fun, conversational way. Encourage comments and sharing. Include relevant emojis and create a sense of community.",
+          "inputs": [
+            {
+              "id": "restaurantName",
+              "label": "Restaurant Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "id": "topic",
+              "label": "Question Topic",
+              "type": "select",
+              "options": [
+                "weekend breakfast spot",
+                "family gathering dish",
+                "dessert choice",
+                "coffee preference",
+                "traditional vs modern cuisine"
+              ],
+              "required": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "hashtagConfig": {
+    "maxHashtags": 30,
+    "tiers": {
+      "tier0_trending": {
+        "label": "Trending Now 🔥",
+        "color": "#FF6B6B"
+      },
+      "tier1_highVolume": {
+        "label": "Popular",
+        "color": "#4ECDC4"
+      },
+      "tier2_specific": {
+        "label": "Specific",
+        "color": "#45B7D1"
+      },
+      "tier3_location": {
+        "label": "Location",
+        "color": "#96CEB4"
+      },
+      "tier4_occasion": {
+        "label": "Occasion",
+        "color": "#FFEAA7"
+      }
+    },
+    "baseHashtags": {
+      "tier1_highVolume": ["#Kuwait", "#Q8", "#KuwaitFood", "#KuwaitRestaurants", "#الكويت", "#مطاعم_الكويت"],
+      "tier2_cuisine": {
+        "kuwaiti": ["#KuwaitiCuisine", "#مأكولات_كويتية", "#Machboos", "#Murabyan"],
+        "lebanese": ["#LebaneseFood", "#مأكولات_لبنانية", "#Mezze", "#Shawarma"],
+        "indian": ["#IndianFood", "#مأكولات_هندية", "#Biryani", "#Curry"],
+        "italian": ["#ItalianFood", "#Pizza", "#Pasta", "#مأكولات_ايطالية"]
+      },
+      "tier3_location": {
+        "salmiya": ["#Salmiya", "#السالمية", "#SalmiyaEats"],
+        "kuwait_city": ["#KuwaitCity", "#مدينة_الكويت", "#DowntownKuwait"],
+        "hawally": ["#Hawally", "#حولي", "#HawallyFood"],
+        "farwaniya": ["#Farwaniya", "#الفروانية"],
+        "ahmadi": ["#Ahmadi", "#الأحمدي"]
+      },
+      "tier4_occasion": {
+        "ramadan": ["#RamadanKuwait", "#Iftar", "#رمضان_الكويت", "#افطار", "#Suhoor", "#سحور"],
+        "nationalDay": ["#KuwaitNationalDay", "#Feb25", "#Feb26", "#العيد_الوطني_الكويتي"],
+        "weekend": ["#WeekendVibes", "#FridayBrunch", "#جمعة_مباركة", "#KuwaitWeekend"]
+      }
+    }
+  },
+  "schedulingConfig": {
+    "regular": {
+      "bestTimes": [
+        { "time": "08:00", "label": "Morning - Breakfast crowd", "icon": "☕" },
+        { "time": "12:30", "label": "Lunch Peak", "icon": "🍽️" },
+        { "time": "16:00", "label": "Afternoon Tea", "icon": "🍰" },
+        { "time": "19:00", "label": "Dinner Planning", "icon": "🌙" },
+        { "time": "21:00", "label": "Late Evening", "icon": "🌃" }
+      ]
+    },
+    "ramadan": {
+      "bestTimes": [
+        { "time": "14:00", "label": "Pre-Iftar Planning", "icon": "📱" },
+        { "time": "17:30", "label": "Iftar Preparation", "icon": "🌅" },
+        { "time": "19:00", "label": "Post-Iftar", "icon": "🌙" },
+        { "time": "22:00", "label": "Ghabga Time", "icon": "☕" },
+        { "time": "02:00", "label": "Suhoor Planning", "icon": "🌟" }
+      ]
+    }
+  },
+  "trendingConfig": {
+    "morning": ["#KuwaitBreakfast", "#صباح_الخير", "#MorningCoffee", "#قهوة_الصباح"],
+    "afternoon": ["#LunchTime", "#غداء", "#KuwaitLunch", "#BusinessLunch"],
+    "evening": ["#DinnerTime", "#عشاء", "#KuwaitDinner", "#FamilyDinner"],
+    "lateNight": ["#LateNightEats", "#سهرة", "#MidnightSnack", "#Ghabga"],
+    "friday": ["#FridayBrunch", "#جمعة_مباركة", "#WeekendVibes", "#FamilyGathering"],
+    "ramadan": ["#RamadanKareem", "#رمضان_كريم", "#IftarTime", "#وقت_الافطار"]
+  },
+  "aiConfig": {
+    "model": "gemini-2.0-flash",
+    "temperature": 0.7,
+    "maxTokens": 500,
+    "systemPrompt": "You are a social media expert specializing in Kuwait's food and restaurant industry. Create engaging, culturally appropriate content that resonates with local audiences while maintaining authenticity and warmth."
+  }
+}

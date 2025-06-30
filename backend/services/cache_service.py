@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 import redis
 from functools import wraps
 import logging
-from flask import current_app
+# Note: current_app import moved to __init__ method to handle app context properly
 import pickle
 import zlib
 
@@ -22,7 +22,18 @@ class CacheService:
     
     def __init__(self, redis_url: str = None):
         """Initialize cache service"""
-        self.redis_url = redis_url or current_app.config.get('REDIS_URL', 'redis://localhost:6379')
+        # Try to get redis URL from environment or Flask config
+        if redis_url:
+            self.redis_url = redis_url
+        else:
+            try:
+                from flask import current_app
+                self.redis_url = current_app.config.get('REDIS_URL', 'redis://localhost:6379')
+            except (RuntimeError, ImportError):
+                # Outside of Flask context or Flask not imported
+                import os
+                self.redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
+        
         self._redis_client = None
         self._memory_cache = {}  # Fallback in-memory cache
         self.default_ttl = 3600  # 1 hour default
@@ -229,8 +240,8 @@ class CacheService:
         return stats
 
 
-# Global cache instance
-cache_service = CacheService()
+# Note: No singleton instance created here
+# Use get_cache_service() from services.container instead
 
 
 def cached(category: str, key_func=None, ttl: int = None, **cache_kwargs):

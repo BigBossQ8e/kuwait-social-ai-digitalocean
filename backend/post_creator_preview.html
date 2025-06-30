@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Smart Post Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f9fa;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        
+        .config-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-outline {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+        
+        /* Main Layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Trending Section */
+        .trending-section {
+            grid-column: 1 / -1;
+            background: #e0f2fe;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .trending-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .trending-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .refresh-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            transform: rotate(180deg);
+        }
+        
+        .trending-tags {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .trending-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Left Column */
+        .left-column {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Step Sections */
+        .step-section {
+            margin-bottom: 32px;
+        }
+        
+        .step-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        
+        /* Goal Cards */
+        .goal-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .goal-card {
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+        }
+        
+        .goal-card:hover {
+            border-color: #2563eb;
+            background: #f0f9ff;
+        }
+        
+        .goal-card.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        .goal-icon {
+            font-size: 24px;
+        }
+        
+        .goal-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* Prompt Dropdown */
+        .prompt-select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .prompt-select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .prompt-options {
+            margin-top: 8px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .prompt-options.show {
+            display: block;
+        }
+        
+        .prompt-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .prompt-option:hover {
+            background: #f3f4f6;
+        }
+        
+        .prompt-option.selected {
+            background: #e0f2fe;
+            font-weight: 500;
+        }
+        
+        /* Form Fields */
+        .form-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .form-description {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .form-group > * {
+            flex: 1;
+        }
+        
+        .form-input {
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .form-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        /* Generate Button */
+        .generate-btn {
+            width: 100%;
+            padding: 18px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+            margin-top: 24px;
+        }
+        
+        .generate-btn:hover {
+            background: #059669;
+        }
+        
+        .generate-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        /* Right Column */
+        .right-column {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 24px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+        
+        .tab {
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #1a1a1a;
+        }
+        
+        .tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+        }
+        
+        /* Generated Content */
+        .generated-content {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            margin-bottom: 24px;
+            min-height: 200px;
+        }
+        
+        .hashtag-section {
+            margin-bottom: 24px;
+        }
+        
+        .hashtag-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+        
+        .hashtag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .hashtag {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+        }
+        
+        .hashtag.trending {
+            background: #fee2e2;
+            color: #dc2626;
+            font-weight: 500;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .copy-btn.copied {
+            background: #10b981;
+        }
+        
+        /* Schedule Tab */
+        .schedule-times {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .schedule-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: background 0.2s;
+        }
+        
+        .schedule-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .schedule-icon {
+            font-size: 24px;
+        }
+        
+        .schedule-info {
+            flex: 1;
+        }
+        
+        .schedule-time {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .schedule-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .schedule-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .schedule-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        /* Hidden file input */
+        #config-upload {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Kuwait Social AI</div>
+        <div class="config-buttons">
+            <input type="file" id="config-upload" accept=".json">
+            <label for="config-upload">
+                <button class="btn-outline">
+                    📤 Upload Config
+                </button>
+            </label>
+            <button class="btn-outline" onclick="downloadConfig()">
+                📥 Download Config
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Trending Section -->
+        <div class="trending-section">
+            <div class="trending-header">
+                <div class="trending-title">
+                    Live Kuwaiti Trends
+                </div>
+                <button class="refresh-btn" onclick="refreshTrends()">
+                    🔄
+                </button>
+            </div>
+            <div class="trending-tags" id="trending-tags">
+                <div class="trending-tag">⚡ #جديد_الكويت</div>
+                <div class="trending-tag">⚡ #قهوة_العصر</div>
+                <div class="trending-tag">⚡ #كشخة_العصر</div>
+                <div class="trending-tag">⚡ #حلو_القهوة</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Step 1: Choose Goal -->
+                <div class="step-section">
+                    <h2 class="step-title">1. Choose a Goal</h2>
+                    <div class="goal-cards">
+                        <div class="goal-card active" onclick="selectGoal('dish', this)">
+                            <span class="goal-icon">🍴</span>
+                            <span class="goal-text">Dish Promotion</span>
+                        </div>
+                        <div class="goal-card" onclick="selectGoal('event', this)">
+                            <span class="goal-icon">🎉</span>
+                            <span class="goal-text">Special Offers & Events</span>
+                        </div>
+                        <div class="goal-card" onclick="selectGoal('engagement', this)">
+                            <span class="goal-icon">📸</span>
+                            <span class="goal-text">Engagement & Behind the Scenes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Prompt -->
+                <div class="step-section" id="step2">
+                    <h2 class="step-title">2. Select a Prompt</h2>
+                    <div class="prompt-select" onclick="togglePromptOptions()">
+                        <span id="selected-prompt">Friday Lunch Special</span>
+                        <span style="float: right;">▼</span>
+                    </div>
+                    <div class="prompt-options" id="prompt-options">
+                        <div class="prompt-option selected" onclick="selectPrompt('friday', 'Friday Lunch Special')">
+                            ✓ Friday Lunch Special
+                        </div>
+                        <div class="prompt-option" onclick="selectPrompt('dewaniya', 'Dewaniya Platter')">
+                            Dewaniya Platter
+                        </div>
+                        <div class="prompt-option" onclick="selectPrompt('office', 'Quick Office Lunch')">
+                            Quick Office Lunch
+                        </div>
+                        <div class="prompt-option" onclick="selectPrompt('habbah', '\"Habbah\" of the Month (The Trend)')">
+                            "Habbah" of the Month (The Trend)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Fill Details -->
+                <div class="step-section" id="step3">
+                    <h2 class="step-title">3. Fill in the Details</h2>
+                    <div class="form-description" id="prompt-description">
+                        Generate a caption for a Friday family gathering dish.
+                    </div>
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder="Your Restaurant Name*" id="restaurant-name">
+                            <input type="text" class="form-input" placeholder="Restaurant Location (e.g., Salmiya)" id="location">
+                        </div>
+                        <textarea class="form-input" rows="3" placeholder="e.g., Majboos Diyay" id="dish-description"></textarea>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generateContent()">
+                        ✨ Generate Post
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('content', this)">Generated Content</div>
+                    <div class="tab" onclick="switchTab('schedule', this)">Smart Schedule</div>
+                </div>
+
+                <div class="content-area">
+                    <!-- Content Tab -->
+                    <div id="content-tab" style="display: block;">
+                        <div class="empty-state" id="empty-state">
+                            <div class="empty-icon">✨</div>
+                            <div class="empty-title">Your AI-Generated Content Will Appear Here</div>
+                            <div class="empty-text">Choose a prompt and fill in the details to get started.</div>
+                        </div>
+                        
+                        <div id="generated-result" style="display: none;">
+                            <div class="generated-content" id="generated-text"></div>
+                            
+                            <div class="hashtag-section">
+                                <div class="hashtag-title">Generated Hashtags (30)</div>
+                                <div class="hashtag-list" id="hashtag-list"></div>
+                            </div>
+                            
+                            <button class="copy-btn" id="copy-btn" onclick="copyContent()">
+                                📋 Copy All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Tab -->
+                    <div id="schedule-tab" style="display: none;">
+                        <div class="schedule-times">
+                            <div class="schedule-item">
+                                <span class="schedule-icon">☕</span>
+                                <div class="schedule-info">
+                                    <div class="schedule-time">08:00</div>
+                                    <div class="schedule-label">Morning - Breakfast crowd</div>
+                                </div>
+                                <button class="schedule-btn">Schedule</button>
+                            </div>
+                            <div class="schedule-item">
+                                <span class="schedule-icon">🍽️</span>
+                                <div class="schedule-info">
+                                    <div class="schedule-time">12:30</div>
+                                    <div class="schedule-label">Lunch Peak</div>
+                                </div>
+                                <button class="schedule-btn">Schedule</button>
+                            </div>
+                            <div class="schedule-item">
+                                <span class="schedule-icon">🍰</span>
+                                <div class="schedule-info">
+                                    <div class="schedule-time">16:00</div>
+                                    <div class="schedule-label">Afternoon Tea</div>
+                                </div>
+                                <button class="schedule-btn">Schedule</button>
+                            </div>
+                            <div class="schedule-item">
+                                <span class="schedule-icon">🌙</span>
+                                <div class="schedule-info">
+                                    <div class="schedule-time">19:00</div>
+                                    <div class="schedule-label">Dinner Planning</div>
+                                </div>
+                                <button class="schedule-btn">Schedule</button>
+                            </div>
+                            <div class="schedule-item">
+                                <span class="schedule-icon">🌃</span>
+                                <div class="schedule-info">
+                                    <div class="schedule-time">21:00</div>
+                                    <div class="schedule-label">Late Evening</div>
+                                </div>
+                                <button class="schedule-btn">Schedule</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration object
+        const config = {
+            trendingHashtags: {
+                morning: ['#صباح_الخير_الكويت', '#قهوة_الصباح', '#فطور_كويتي', '#صباحات_الكويت'],
+                afternoon: ['#غداء_الكويت', '#قهوة_العصر', '#كشخة_العصر', '#جلسة_عصر'],
+                evening: ['#عشاء_الكويت', '#جمعة_العائلة', '#سهرة_كويتية', '#ليالي_الكويت'],
+                friday: ['#جمعة_مباركة', '#غداء_الجمعة', '#تجمع_العائلة', '#يوم_الجمعة']
+            }
+        };
+
+        // State
+        let selectedGoal = 'dish';
+        let selectedPromptId = 'friday';
+        let generatedContent = '';
+        let generatedHashtags = [];
+
+        // Goal selection
+        function selectGoal(goal, element) {
+            selectedGoal = goal;
+            document.querySelectorAll('.goal-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Update prompts based on goal
+            updatePrompts(goal);
+        }
+
+        // Update prompts
+        function updatePrompts(goal) {
+            const promptOptions = document.getElementById('prompt-options');
+            promptOptions.innerHTML = '';
+            
+            if (goal === 'dish') {
+                promptOptions.innerHTML = `
+                    <div class="prompt-option selected" onclick="selectPrompt('friday', 'Friday Lunch Special')">
+                        ✓ Friday Lunch Special
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('dewaniya', 'Dewaniya Platter')">
+                        Dewaniya Platter
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('office', 'Quick Office Lunch')">
+                        Quick Office Lunch
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('habbah', '\\"Habbah\\" of the Month (The Trend)')">
+                        "Habbah" of the Month (The Trend)
+                    </div>
+                `;
+            } else if (goal === 'event') {
+                promptOptions.innerHTML = `
+                    <div class="prompt-option selected" onclick="selectPrompt('ramadan', 'Ramadan Iftar Special')">
+                        ✓ Ramadan Iftar Special
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('national', 'National Day Celebration')">
+                        National Day Celebration
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('weekend', 'Weekend Family Offer')">
+                        Weekend Family Offer
+                    </div>
+                `;
+            } else {
+                promptOptions.innerHTML = `
+                    <div class="prompt-option selected" onclick="selectPrompt('question', 'Weekend Engagement Question')">
+                        ✓ Weekend Engagement Question
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('behind', 'Behind the Scenes')">
+                        Behind the Scenes
+                    </div>
+                    <div class="prompt-option" onclick="selectPrompt('staff', 'Staff Spotlight')">
+                        Staff Spotlight
+                    </div>
+                `;
+            }
+        }
+
+        // Toggle prompt dropdown
+        function togglePromptOptions() {
+            const options = document.getElementById('prompt-options');
+            options.classList.toggle('show');
+        }
+
+        // Select prompt
+        function selectPrompt(promptId, promptText) {
+            selectedPromptId = promptId;
+            document.getElementById('selected-prompt').textContent = promptText;
+            document.querySelectorAll('.prompt-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.textContent.includes(promptText)) {
+                    option.innerHTML = '✓ ' + promptText;
+                    option.classList.add('selected');
+                } else {
+                    option.innerHTML = option.textContent.replace('✓ ', '');
+                }
+            });
+            togglePromptOptions();
+            
+            // Update form description
+            updateFormDescription(promptId);
+        }
+
+        // Update form description
+        function updateFormDescription(promptId) {
+            const descriptions = {
+                friday: 'Generate a caption for a Friday family gathering dish.',
+                dewaniya: 'Create a post highlighting your traditional Dewaniya platter.',
+                office: 'Promote a quick lunch option for busy professionals.',
+                habbah: 'Feature this month\'s trending dish that everyone\'s talking about.',
+                ramadan: 'Create a warm invitation for your Ramadan Iftar offerings.',
+                national: 'Celebrate Kuwait National Day with special offers.',
+                weekend: 'Announce your weekend family deals.',
+                question: 'Engage your audience with an interactive question.',
+                behind: 'Share what happens behind the scenes at your restaurant.',
+                staff: 'Highlight your amazing team members.'
+            };
+            
+            document.getElementById('prompt-description').textContent = descriptions[promptId] || 'Fill in the details below.';
+        }
+
+        // Refresh trends
+        function refreshTrends() {
+            const hour = new Date().getHours();
+            const day = new Date().getDay();
+            let trends = [];
+            
+            // Time-based trends
+            if (hour >= 6 && hour < 11) {
+                trends = config.trendingHashtags.morning;
+            } else if (hour >= 11 && hour < 16) {
+                trends = config.trendingHashtags.afternoon;
+            } else {
+                trends = config.trendingHashtags.evening;
+            }
+            
+            // Add Friday trends
+            if (day === 5) {
+                trends = [...trends, ...config.trendingHashtags.friday];
+            }
+            
+            // Randomize and display
+            trends = trends.sort(() => Math.random() - 0.5).slice(0, 4);
+            const container = document.getElementById('trending-tags');
+            container.innerHTML = trends.map(tag => `<div class="trending-tag">⚡ ${tag}</div>`).join('');
+        }
+
+        // Generate content
+        function generateContent() {
+            const restaurantName = document.getElementById('restaurant-name').value;
+            const location = document.getElementById('location').value;
+            const dishDescription = document.getElementById('dish-description').value;
+            
+            if (!restaurantName) {
+                alert('Please enter your restaurant name');
+                return;
+            }
+            
+            // Simulate AI generation
+            setTimeout(() => {
+                // Generate content based on selected prompt
+                if (selectedPromptId === 'friday') {
+                    generatedContent = `🌟 جمعة مباركة من ${restaurantName}! 🌟\n\n` +
+                        `استمتعوا بأطيب ${dishDescription || 'المأكولات الكويتية'} مع العائلة والأحباب في أجواء دافئة ومميزة.\n\n` +
+                        `📍 ${location || 'الكويت'}\n` +
+                        `⏰ مفتوح من ١٢ ظهراً حتى ١١ مساءً\n\n` +
+                        `احجز طاولتك الآن: 📞 1234567\n\n` +
+                        `#جمعة_العائلة #${restaurantName.replace(/\s/g, '')}`;
+                } else {
+                    generatedContent = `✨ Welcome to ${restaurantName}! ✨\n\n` +
+                        `Enjoy our special ${dishDescription || 'delicious dishes'} in the heart of ${location || 'Kuwait'}.\n\n` +
+                        `📍 Visit us today!\n` +
+                        `⏰ Open from 12 PM to 11 PM\n\n` +
+                        `Reserve now: 📞 1234567`;
+                }
+                
+                // Generate hashtags
+                const trendingTags = Array.from(document.querySelectorAll('.trending-tag')).map(el => el.textContent.replace('⚡ ', ''));
+                const baseTags = ['#Kuwait', '#Q8', '#KuwaitFood', '#الكويت', '#مطاعم_الكويت'];
+                const locationTags = location ? [`#${location}`, `#${location}Eats`] : [];
+                
+                generatedHashtags = [...trendingTags, ...baseTags, ...locationTags];
+                
+                // Add more hashtags
+                if (selectedPromptId === 'friday') {
+                    generatedHashtags.push('#FridayVibes', '#WeekendMood', '#جمعة_مباركة');
+                }
+                
+                // Display results
+                displayGeneratedContent();
+            }, 1500);
+        }
+
+        // Display generated content
+        function displayGeneratedContent() {
+            document.getElementById('empty-state').style.display = 'none';
+            document.getElementById('generated-result').style.display = 'block';
+            
+            document.getElementById('generated-text').textContent = generatedContent;
+            
+            const hashtagList = document.getElementById('hashtag-list');
+            hashtagList.innerHTML = generatedHashtags.map((tag, index) => {
+                const isTrending = index < 4;
+                return `<span class="hashtag ${isTrending ? 'trending' : ''}">${tag}</span>`;
+            }).join('');
+        }
+
+        // Copy content
+        function copyContent() {
+            const fullContent = generatedContent + '\n\n' + generatedHashtags.join(' ');
+            navigator.clipboard.writeText(fullContent).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerHTML = '✅ Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = '📋 Copy All';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Switch tabs
+        function switchTab(tab, element) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            
+            document.getElementById('content-tab').style.display = tab === 'content' ? 'block' : 'none';
+            document.getElementById('schedule-tab').style.display = tab === 'schedule' ? 'block' : 'none';
+        }
+
+        // Download config
+        function downloadConfig() {
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', 'kuwait-social-ai-config.json');
+            link.click();
+        }
+
+        // Initialize
+        refreshTrends();
+    </script>
+</body>
+</html>

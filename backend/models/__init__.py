@@ -43,6 +43,9 @@ from .reporting_models import (
     ReportTemplate, GeneratedReport, ROITracking,
     AnalyticsDashboard, MetricAlert, BenchmarkData
 )
+from .translation import Translation, TranslationHistory
+from .theme import ThemeSetting, ThemePreset, ThemeHistory
+from .telegram import TelegramAccount
 
 # Export all models
 __all__ = [
@@ -84,5 +87,11 @@ __all__ = [
     
     # Reporting models
     'ReportTemplate', 'GeneratedReport', 'ROITracking',
-    'AnalyticsDashboard', 'MetricAlert', 'BenchmarkData'
+    'AnalyticsDashboard', 'MetricAlert', 'BenchmarkData',
+    
+    # Translation and theme models
+    'Translation', 'TranslationHistory', 'ThemeSetting', 'ThemePreset', 'ThemeHistory',
+    
+    # Telegram model
+    'TelegramAccount'
 ]

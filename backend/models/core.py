@@ -36,6 +36,7 @@ class User(db.Model):
     owner_profile = db.relationship('Owner', back_populates='user', uselist=False)
     admin_profile = db.relationship('Admin', back_populates='user', uselist=False)
     client_profile = db.relationship('Client', back_populates='user', uselist=False)
+    telegram_accounts = db.relationship('TelegramAccount', back_populates='user', lazy='dynamic')
     
     def set_password(self, password):
         # Use pbkdf2:sha256 for compatibility
@@ -186,6 +187,7 @@ class Post(db.Model):
     # Relationships
     client = db.relationship('Client', back_populates='posts')
     analytics = db.relationship('PostAnalytics', back_populates='post', uselist=False)
+    campaign = db.relationship('Campaign', back_populates='posts')
 
 class PostAnalytics(db.Model):
     """Analytics for individual posts"""

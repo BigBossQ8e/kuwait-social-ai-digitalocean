@@ -329,10 +329,6 @@ class SupportTicket(db.Model):
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Campaign relationship
-    campaign_id = db.Column(db.Integer, db.ForeignKey("campaigns.id"), nullable=True)
-    campaign = db.relationship("Campaign", back_populates="posts")
     resolved_at = db.Column(db.DateTime)
     
     # Relationships
@@ -849,4 +845,3 @@ class Campaign(db.Model):
     client_id = db.Column(db.Integer, db.ForeignKey("clients.id"))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     posts = db.relationship("Post", back_populates="campaign")
-    support_tickets = db.relationship("SupportTicket", back_populates="campaign")

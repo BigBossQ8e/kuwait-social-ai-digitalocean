@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 import re
 from extensions import db
-from models import User, Client, Admin, Owner, AuditLog
+from models.core import User, Client, Admin, Owner, AuditLog
 # from utils.email import send_welcome_email  # TODO: Create email utility
 from utils.validators import validate_request, sanitize_input
 from schemas import (

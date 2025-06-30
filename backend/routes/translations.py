@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import and_
-from models.user import User
-from models.translation import Translation, TranslationHistory
+from models import User, Translation, TranslationHistory
 from extensions import db
 import json
 from datetime import datetime

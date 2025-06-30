@@ -56,7 +56,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       case 'admin':
         return '/admin';
       case 'owner':
-        return '/dashboard'; // Owner uses the same dashboard route
+        return '/owner';
       case 'client':
       default:
         return '/dashboard';

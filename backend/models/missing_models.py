@@ -97,8 +97,8 @@ class Campaign(db.Model):
     
     # Relationships
     client = db.relationship('Client', backref='campaigns')
-    posts = db.relationship('Post', backref='campaign', lazy='dynamic')
-    scheduled_posts = db.relationship('ScheduledPost', backref='campaign', lazy='dynamic')
+    posts = db.relationship('Post', back_populates='campaign', lazy='dynamic')
+    scheduled_posts = db.relationship('ScheduledPost', back_populates='campaign', lazy='dynamic')
     
     def __repr__(self):
         return f'<Campaign {self.name}>'
@@ -170,6 +170,7 @@ class ScheduledPost(db.Model):
     
     # Relationships
     client = db.relationship('Client', backref='scheduled_posts')
+    campaign = db.relationship('Campaign', back_populates='scheduled_posts')
     
     def __repr__(self):
         return f'<ScheduledPost {self.id} for {self.scheduled_for}>'

@@ -502,5 +502,5 @@ class HashtagStrategyService:
         return relevant_terms[:10]
 
 
-# Singleton instance
-hashtag_strategy_service = HashtagStrategyService()
+# Note: No singleton instance created here
+# Use get_hashtag_strategy_service() from services.container instead
