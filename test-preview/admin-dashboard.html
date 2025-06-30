@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Admin Dashboard Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .header .badge {
+            background: #e74c3c;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .sidebar {
+            background-color: #34495e;
+            width: 250px;
+            min-height: calc(100vh - 60px);
+            float: left;
+            padding: 1rem 0;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .sidebar li:hover {
+            background-color: #2c3e50;
+        }
+        
+        .sidebar li.active {
+            background-color: #1abc9c;
+        }
+        
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .metric-card.warning {
+            border-left-color: #f39c12;
+        }
+        
+        .metric-card.success {
+            border-left-color: #27ae60;
+        }
+        
+        .metric-card.danger {
+            border-left-color: #e74c3c;
+        }
+        
+        .metric-card h3 {
+            font-size: 0.875rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .metric-card .subtitle {
+            font-size: 0.875rem;
+            color: #95a5a6;
+            margin-top: 0.5rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.875rem;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .system-health {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .health-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .health-item .status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .health-item .status.healthy {
+            background: #27ae60;
+        }
+        
+        .health-item .status.warning {
+            background: #f39c12;
+        }
+        
+        .health-item .status.error {
+            background: #e74c3c;
+        }
+        
+        .api-test {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .api-test button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .api-test button:hover {
+            background: #2980b9;
+        }
+        
+        #api-response {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Kuwait Social AI - Admin Panel</h1>
+        <div>
+            <span class="badge">ADMIN</span>
+        </div>
+    </header>
+    
+    <aside class="sidebar">
+        <ul>
+            <li class="active">
+                <a href="#"><span>📊</span> Dashboard</a>
+            </li>
+            <li>
+                <a href="#"><span>👥</span> Users</a>
+            </li>
+            <li>
+                <a href="#"><span>📈</span> Analytics</a>
+            </li>
+            <li>
+                <a href="#"><span>⚡</span> Performance</a>
+            </li>
+            <li>
+                <a href="#"><span>💰</span> Subscriptions</a>
+            </li>
+            <li>
+                <a href="#"><span>🔧</span> System Health</a>
+            </li>
+            <li>
+                <a href="#"><span>📝</span> Audit Logs</a>
+            </li>
+            <li>
+                <a href="#"><span>⚠️</span> Error Tracking</a>
+            </li>
+            <li>
+                <a href="#"><span>⚙️</span> Settings</a>
+            </li>
+        </ul>
+    </aside>
+    
+    <main class="main-content">
+        <!-- Overview Metrics -->
+        <div class="overview-grid">
+            <div class="metric-card success">
+                <h3>Total Clients</h3>
+                <div class="value">127</div>
+                <div class="subtitle">+8 this month</div>
+            </div>
+            <div class="metric-card">
+                <h3>Active Subscriptions</h3>
+                <div class="value">115</div>
+                <div class="subtitle">90.5% retention rate</div>
+            </div>
+            <div class="metric-card warning">
+                <h3>Revenue (Monthly)</h3>
+                <div class="value">KWD 4,580</div>
+                <div class="subtitle">+12% vs last month</div>
+            </div>
+            <div class="metric-card danger">
+                <h3>System Errors</h3>
+                <div class="value">3</div>
+                <div class="subtitle">Last 24 hours</div>
+            </div>
+        </div>
+        
+        <!-- Recent Users -->
+        <section class="section">
+            <h2>Recent Client Activity</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Email</th>
+                        <th>Plan</th>
+                        <th>Status</th>
+                        <th>Last Active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Al-Babtain Electronics</td>
+                        <td>contact@babtain.kw</td>
+                        <td>Professional</td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>2 minutes ago</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary">View</button>
+                            <button class="btn btn-danger">Suspend</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Kuwait Fashion House</td>
+                        <td>info@kfh.com.kw</td>
+                        <td>Enterprise</td>
+                        <td><span class="status-badge active">Active</span></td>
+                        <td>15 minutes ago</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary">View</button>
+                            <button class="btn btn-danger">Suspend</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Q8 Restaurant Group</td>
+                        <td>admin@q8restaurants.kw</td>
+                        <td>Basic</td>
+                        <td><span class="status-badge pending">Trial</span></td>
+                        <td>1 hour ago</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary">View</button>
+                            <button class="btn btn-success">Upgrade</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Marina Mall Stores</td>
+                        <td>manager@marinamall.kw</td>
+                        <td>Professional</td>
+                        <td><span class="status-badge inactive">Expired</span></td>
+                        <td>3 days ago</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-primary">View</button>
+                            <button class="btn btn-success">Renew</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <!-- System Health -->
+        <section class="section">
+            <h2>System Health</h2>
+            <div class="system-health">
+                <div class="health-item">
+                    <div class="status healthy"></div>
+                    <h4>Database</h4>
+                    <p>Healthy</p>
+                </div>
+                <div class="health-item">
+                    <div class="status healthy"></div>
+                    <h4>API Server</h4>
+                    <p>Running</p>
+                </div>
+                <div class="health-item">
+                    <div class="status warning"></div>
+                    <h4>Redis Cache</h4>
+                    <p>High Memory</p>
+                </div>
+                <div class="health-item">
+                    <div class="status healthy"></div>
+                    <h4>File Storage</h4>
+                    <p>23% Used</p>
+                </div>
+                <div class="health-item">
+                    <div class="status error"></div>
+                    <h4>Email Service</h4>
+                    <p>Connection Error</p>
+                </div>
+                <div class="health-item">
+                    <div class="status healthy"></div>
+                    <h4>OpenAI API</h4>
+                    <p>Connected</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- API Test Section -->
+        <section class="section">
+            <h2>Admin API Test</h2>
+            <div class="api-test">
+                <p>Test admin API endpoints (requires admin authentication):</p>
+                <button onclick="testAPI('/api/admin/users')">List Users</button>
+                <button onclick="testAPI('/api/admin/performance/system/health')">System Health</button>
+                <button onclick="testAPI('/api/admin/performance/database/stats')">Database Stats</button>
+                <button onclick="testAPI('/api/monitoring/metrics')">Monitoring Metrics</button>
+                <button onclick="testAPI('/api/monitoring/errors/recent')">Recent Errors</button>
+                <div id="api-response"></div>
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        // API Test Function
+        async function testAPI(endpoint) {
+            const responseDiv = document.getElementById('api-response');
+            responseDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`https://kwtsocial.com${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add admin auth token if available
+                        // 'Authorization': 'Bearer YOUR_ADMIN_TOKEN_HERE'
+                    }
+                });
+                
+                const data = await response.json();
+                responseDiv.innerHTML = `Endpoint: ${endpoint}\nStatus: ${response.status}\nResponse:\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                responseDiv.innerHTML = `Endpoint: ${endpoint}\nError: ${error.message}`;
+            }
+        }
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update active users count
+            const activeUsers = document.querySelector('.metric-card .value');
+            const currentValue = parseInt(activeUsers.textContent);
+            activeUsers.textContent = currentValue + Math.floor(Math.random() * 3 - 1);
+            
+            // Update last active times
+            const lastActiveCell = document.querySelector('.table tbody tr:first-child td:nth-child(5)');
+            lastActiveCell.textContent = 'Just now';
+        }, 5000);
+        
+        // Add click handlers for sidebar
+        document.querySelectorAll('.sidebar li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelector('.sidebar li.active').classList.remove('active');
+                this.classList.add('active');
+                alert(`${this.textContent.trim()} section coming soon!`);
+            });
+        });
+        
+        // Add click handlers for action buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.onclick) {
+                    e.preventDefault();
+                    alert(`${this.textContent} action would be performed here`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

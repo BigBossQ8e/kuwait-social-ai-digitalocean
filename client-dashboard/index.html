@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - F&B Dashboard Enhanced</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            color: #ff6b6b;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #ff6b6b;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #ee5a24;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-section h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* Content Categories */
+        .content-categories {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+        }
+
+        .category-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .template-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .template-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .template-card:hover {
+            border-color: #ff6b6b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255,107,107,0.15);
+        }
+
+        .template-card h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .template-card p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .template-timing {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            line-height: 20px;
+            opacity: 0.8;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .dynamic-fields {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .field-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .field-input label {
+            min-width: 120px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .hashtag-section {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .hashtag-tier {
+            margin-bottom: 15px;
+        }
+
+        .hashtag-tier h5 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #0066cc;
+        }
+
+        .hashtag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .hashtag-chip {
+            background-color: #e7f3ff;
+            color: #0066cc;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            border: 1px solid #cce5ff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hashtag-chip:hover {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        .hashtag-chip.selected {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        .timing-section {
+            background-color: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .timing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .timing-option {
+            padding: 10px;
+            border: 2px solid #ffeb99;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .timing-option:hover {
+            border-color: #ffc107;
+            background-color: #fff9e6;
+        }
+
+        .timing-option.selected {
+            border-color: #ffc107;
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .timing-option .time {
+            font-weight: bold;
+            display: block;
+        }
+
+        .timing-option .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .visual-cue-box {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .visual-cue-box strong {
+            color: #333;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .language-toggle button {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .language-toggle button.active {
+            background-color: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .generated-content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .generated-content h4 {
+            margin-bottom: 15px;
+            color: #28a745;
+        }
+
+        .content-preview {
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .template-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+            }
+
+            .timing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>🍽️ Kuwait Social AI - F&B</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="active">Content Creator</a>
+                <a href="#analytics">Analytics</a>
+                <a href="#competitors">Competitors</a>
+                <a href="#calendar">Calendar</a>
+                <a href="#settings">Settings</a>
+            </nav>
+            <div class="user-menu">
+                <span id="userEmail">Loading...</span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h2>Welcome back, <span id="clientName">Restaurant</span>! 🎉</h2>
+            <p>Create mouth-watering content that brings customers to your door</p>
+        </div>
+
+        <!-- Content Categories -->
+        <div class="content-categories">
+            <!-- Dish Promotion -->
+            <div class="category-section">
+                <h3>🍽️ Dish Promotion</h3>
+                <div class="template-cards">
+                    <div class="template-card" onclick="openContentModal('friday-lunch')">
+                        <h4>Friday Lunch Special</h4>
+                        <p>Generate a caption for a Friday family gathering dish</p>
+                        <span class="template-timing">Best at: Lunch</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('dewaniya-platter')">
+                        <h4>Dewaniya Platter</h4>
+                        <p>Create an exciting post for late-night gatherings</p>
+                        <span class="template-timing">Best at: Late Night</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('office-lunch')">
+                        <h4>Quick Office Lunch</h4>
+                        <p>Write a concise post for busy professionals</p>
+                        <span class="template-timing">Best at: Lunch</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('habbah-of-month')">
+                        <h4>"Habbah" of the Month</h4>
+                        <p>Generate hype for a new trendy item</p>
+                        <span class="template-timing">Best at: Afternoon</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Offers & Events -->
+            <div class="category-section">
+                <h3>🎊 Special Offers & Events</h3>
+                <div class="template-cards">
+                    <div class="template-card" onclick="openContentModal('ramadan-offer')">
+                        <h4>Ramadan Offer</h4>
+                        <p>Draft a post for Iftar, Suhoor, or Ghabga set menu</p>
+                        <span class="template-timing">Ramadan Timing</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('national-day')">
+                        <h4>National Day Special</h4>
+                        <p>Create a celebratory post for National & Liberation Day</p>
+                        <span class="template-timing">All Day</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('new-branch')">
+                        <h4>New Branch Opening</h4>
+                        <p>Announce a new location with excitement</p>
+                        <span class="template-timing">All Day</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement & Behind the Scenes -->
+            <div class="category-section">
+                <h3>📸 Engagement & Behind the Scenes</h3>
+                <div class="template-cards">
+                    <div class="template-card" onclick="openContentModal('ingredient-spotlight')">
+                        <h4>Ingredient Spotlight</h4>
+                        <p>Focus on fresh, high-quality ingredients</p>
+                        <span class="template-timing">Best at: Dinner</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('how-its-made')">
+                        <h4>How It's Made</h4>
+                        <p>Create a script for a 'making-of' video</p>
+                        <span class="template-timing">Best at: Dinner</span>
+                    </div>
+                    <div class="template-card" onclick="openContentModal('ask-audience')">
+                        <h4>Ask The Audience</h4>
+                        <p>Boost engagement with interactive questions</p>
+                        <span class="template-timing">Best at: Afternoon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Content Generation Modal -->
+    <div id="contentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create Content</h3>
+                <span class="modal-close" onclick="closeContentModal()">&times;</span>
+            </div>
+            <form id="contentForm" onsubmit="generateContent(event)">
+                <div class="modal-body">
+                    <!-- Dynamic Fields Section -->
+                    <div class="dynamic-fields" id="dynamicFields">
+                        <!-- Fields will be populated based on template -->
+                    </div>
+
+                    <!-- Restaurant Context -->
+                    <div class="form-group">
+                        <label>Restaurant Context (optional)</label>
+                        <input type="text" id="restaurantContext" placeholder="E.g., Italian restaurant in Salmiya, family-friendly">
+                    </div>
+
+                    <!-- Target Audience -->
+                    <div class="form-group">
+                        <label>Target Audience</label>
+                        <select id="targetAudience">
+                            <option value="families">Families</option>
+                            <option value="youth">Young Adults</option>
+                            <option value="professionals">Business Professionals</option>
+                            <option value="tourists">Tourists</option>
+                            <option value="all">Everyone</option>
+                        </select>
+                    </div>
+
+                    <!-- Timing Section -->
+                    <div class="timing-section">
+                        <h5>Best Posting Time</h5>
+                        <div class="timing-grid" id="timingGrid">
+                            <!-- Will be populated based on template -->
+                        </div>
+                    </div>
+
+                    <!-- Language -->
+                    <div class="form-group">
+                        <label>Language</label>
+                        <div class="language-toggle">
+                            <button type="button" class="active" onclick="setLanguage('en')">English</button>
+                            <button type="button" onclick="setLanguage('ar')">Arabic</button>
+                            <button type="button" onclick="setLanguage('both')">Both</button>
+                        </div>
+                    </div>
+
+                    <!-- Hashtag Selection -->
+                    <div class="hashtag-section">
+                        <h5>Select Hashtags</h5>
+                        <div class="hashtag-tier">
+                            <h5>General Kuwait Food</h5>
+                            <div class="hashtag-list" id="tier1Hashtags"></div>
+                        </div>
+                        <div class="hashtag-tier">
+                            <h5>Cuisine Specific</h5>
+                            <div class="hashtag-list" id="cuisineHashtags"></div>
+                        </div>
+                        <div class="hashtag-tier">
+                            <h5>Location</h5>
+                            <div class="hashtag-list" id="locationHashtags"></div>
+                        </div>
+                        <div class="hashtag-tier">
+                            <h5>Occasion</h5>
+                            <div class="hashtag-list" id="occasionHashtags"></div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Cue -->
+                    <div class="visual-cue-box" id="visualCue">
+                        <!-- Will be populated based on template -->
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeEmojis" checked>
+                            Add relevant emojis
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeCallToAction" checked>
+                            Add call-to-action
+                        </label>
+                    </div>
+
+                    <!-- Generated Content Preview -->
+                    <div class="generated-content" id="generatedContent" style="display: none;">
+                        <h4>✨ Generated Content</h4>
+                        <div class="content-preview" id="contentPreview"></div>
+                        <div class="content-actions">
+                            <button type="button" class="btn btn-success" onclick="copyContent()">📋 Copy</button>
+                            <button type="button" class="btn btn-primary" onclick="regenerateContent()">🔄 Regenerate</button>
+                            <button type="button" class="btn btn-secondary" onclick="schedulePost()">📅 Schedule</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeContentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        Generate Content
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('access_token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        // Set user info
+        document.getElementById('userEmail').textContent = user.email || 'Client';
+        document.getElementById('clientName').textContent = user.company_name || 'Restaurant';
+
+        // Complete F&B2.json data
+        const fbData = {
+            promptsData: {
+                "Dish Promotion": [
+                    {
+                        id: "friday-lunch",
+                        title: "Friday Lunch Special",
+                        description: "Generate a caption for a Friday family gathering dish.",
+                        fields: [
+                            { name: "dishName", placeholder: "e.g., Majboos Diyay" }
+                        ],
+                        prompt: "Generate a social media post for our dish \"{{dishName}}\". It's a Friday lunch special. The tone should be warm and inviting, mentioning sharing and tradition for a family gathering in Kuwait.",
+                        template: "social-gathering",
+                        timing: "lunch"
+                    },
+                    {
+                        id: "dewaniya-platter",
+                        title: "Dewaniya Platter",
+                        description: "Create an exciting post for a new platter for late-night gatherings.",
+                        fields: [
+                            { name: "platterName", placeholder: "e.g., Mixed Grill Platter" }
+                        ],
+                        prompt: "Create an exciting and engaging social media post for our new \"{{platterName}}\". It's perfect for a late-night Dewaniya in Kuwait. Highlight variety, deliciousness, and ease of ordering for a group.",
+                        template: "social-gathering",
+                        timing: "late-night"
+                    },
+                    {
+                        id: "office-lunch",
+                        title: "Quick Office Lunch",
+                        description: "Write a concise post for a quick and delicious office lunch.",
+                        fields: [
+                            { name: "mealName", placeholder: "e.g., Shawarma Box" }
+                        ],
+                        prompt: "Write a concise, punchy social media post about our \"{{mealName}}\". Frame it as the perfect quick, easy, and delicious lunch for busy people at the office in Kuwait. Emphasize speed and flavor.",
+                        template: "ultimate-craving",
+                        timing: "lunch"
+                    },
+                    {
+                        id: "habbah-of-month",
+                        title: "\"Habbah\" of the Month (The Trend)",
+                        description: "Generate hype for a new trendy item.",
+                        fields: [
+                            { name: "itemName", placeholder: "e.g., Pistachio Saffron Latte" }
+                        ],
+                        prompt: "Generate a trendy, energetic, and must-try social media post to create hype for our new item: \"{{itemName}}\". Use popular Kuwaiti slang if appropriate. The tone should be exciting and create a sense of FOMO (fear of missing out).",
+                        template: "ultimate-craving",
+                        timing: "afternoon"
+                    }
+                ],
+                "Special Offers & Events": [
+                    {
+                        id: "ramadan-offer",
+                        title: "Ramadan Offer",
+                        description: "Draft a post for a Ramadan Iftar, Suhoor, or Ghabga set menu.",
+                        fields: [
+                            { name: "price", placeholder: "e.g., 12 KWD per person" },
+                            { name: "keyDishes", placeholder: "e.g., Harees, Tashreeb, Luqaimat" }
+                        ],
+                        prompt: "Draft a respectful and warm social media post announcing our special Ramadan menu. Include details like the price: {{price}} and key dishes: {{keyDishes}}. End with a traditional blessing like \"Ramadan Kareem\" or \"Mubarak Alaikum Al Shahar\".",
+                        template: "ramadan-greeting",
+                        timing: "iftar"
+                    },
+                    {
+                        id: "national-day",
+                        title: "National Day Special",
+                        description: "Create a celebratory post for National & Liberation Day.",
+                        fields: [
+                            { name: "dishName", placeholder: "e.g., Kuwaiti Flag Cake" },
+                            { name: "offer", placeholder: "e.g., 25% off" }
+                        ],
+                        prompt: "Create a celebratory and patriotic social media post for Kuwait's National & Liberation Day in February. Announce a special offer: \"{{offer}}\" on our \"{{dishName}}\". Suggest using patriotic colors and themes in the visuals.",
+                        template: "social-gathering",
+                        timing: "all-day"
+                    },
+                    {
+                        id: "new-branch",
+                        title: "New Branch Opening",
+                        description: "Announce a new branch opening.",
+                        fields: [
+                            { name: "location", placeholder: "e.g., Salem Al Mubarak St., Salmiya" },
+                            { name: "openingDate", placeholder: "e.g., August 1st" },
+                            { name: "discount", placeholder: "e.g., 50% off first 100 customers" }
+                        ],
+                        prompt: "Write an exciting announcement for our new branch opening in {{location}} on {{openingDate}}. Mention our special launch-day discount: \"{{discount}}\". The tone should be celebratory and create buzz.",
+                        template: "social-gathering",
+                        timing: "all-day"
+                    }
+                ],
+                "Engagement & Behind the Scenes": [
+                    {
+                        id: "ingredient-spotlight",
+                        title: "Ingredient Spotlight",
+                        description: "Focus on a fresh, high-quality ingredient.",
+                        fields: [
+                            { name: "ingredient", placeholder: "e.g., Fresh Local Hammour" }
+                        ],
+                        prompt: "Generate a social media caption focusing on a fresh, high-quality ingredient we use: \"{{ingredient}}\". The tone should emphasize quality, authenticity, and our commitment to the best. Explain why this ingredient makes our dishes special.",
+                        template: "ultimate-craving",
+                        timing: "dinner"
+                    },
+                    {
+                        id: "how-its-made",
+                        title: "How It's Made",
+                        description: "Create a script for a short 'making-of' video.",
+                        fields: [
+                            { name: "dishName", placeholder: "e.g., Kunafa" }
+                        ],
+                        prompt: "Create a short, engaging script for a social media video (like a Reel or TikTok) showing our chef preparing \"{{dishName}}\". The script should describe the visual and audio steps. Focus on sensory details: the sights, the sounds, the sizzle. The output should be a list of timed scenes.",
+                        template: "ultimate-craving",
+                        timing: "dinner"
+                    },
+                    {
+                        id: "ask-audience",
+                        title: "Ask The Audience",
+                        description: "Write a post to boost engagement.",
+                        fields: [],
+                        prompt: "Write an engaging social media post to boost comments and interaction. The post should ask our followers in Kuwait a fun question like: \"If you could only eat one item from our menu for the rest of your life, what would it be and why? 🤔 Let us know in the comments!\"",
+                        template: "social-gathering",
+                        timing: "afternoon"
+                    }
+                ]
+            },
+            templates: {
+                "ultimate-craving": {
+                    structure: "**Headline:** An attention-grabbing question.\n**Body:** Sensory details focusing on sight, smell, and texture.\n**Call to Action (CTA):** Direct and urgent.",
+                    visualCue: "A close-up, high-resolution photo or a short video of a cheese-pull or sizzling action.",
+                    purpose: "To trigger an immediate desire for a specific, indulgent dish."
+                },
+                "social-gathering": {
+                    structure: "**Headline:** Focus on togetherness, using Arabic phrases where appropriate (e.g., \"جمعة الأهل ما تحلى إلا ويانا\").\n**Body:** Describe platters and dishes made for sharing, emphasizing convenience and abundance.\n**Call to Action (CTA):** Encourage pre-ordering or booking.",
+                    visualCue: "A photo/video of a group of people (or just hands) sharing food, or a flat-lay of a large platter.",
+                    purpose: "To position the restaurant as the best choice for group meals."
+                },
+                "ramadan-greeting": {
+                    structure: "**Headline:** A traditional Arabic greeting (e.g., \"مبارك عليكم الشهر\").\n**Body:** Announce the Iftar or Suhoor offering with a respectful and warm tone.\n**Call to Action (CTA):** Provide booking information and timings.",
+                    visualCue: "An elegant video of the buffet, dates, and laban, with subtle traditional music or calligraphy.",
+                    purpose: "To connect with customers on a cultural and spiritual level during Ramadan."
+                }
+            },
+            hashtagTiers: {
+                tier1: ["#مطاعم_الكويت", "#الكويت", "#اكل_كويتي", "#foodie", "#kuwaitfood"],
+                cuisine: {
+                    burger: ["#برجر_الكويت", "#burgerkuwait"],
+                    pasta: ["#باستا_الكويت", "#pastakuwait"],
+                    coffee: ["#قهوة_مختصة", "#specialtycoffeekw"],
+                    sushi: ["#سوشي_الكويت", "#sushikuwait"],
+                    sweets: ["#حلويات_الكويت", "#dessertskuwait"],
+                    shawarma: ["#شاورما_الكويت", "#shawarmakw"],
+                    majboos: ["#مجبوس_دياي", "#kuwaititradition"]
+                },
+                location: {
+                    salmiya: ["#السالمية", "#salmiya"],
+                    sharq: ["#شرق", "#sharq"],
+                    avenues: ["#مجمع_الافنيوز", "#theavenues"],
+                    murouj: ["#مروج", "#murouj"]
+                },
+                occasion: {
+                    ramadan: ["#فطور_رمضان", "#غبقة", "#سحور_رمضان", "#ramadankw"],
+                    national_day: ["#هلا_فبراير", "#العيد_الوطني_الكويتي"],
+                    gathering: ["#جمعة_أهل", "#يمعة_اهل", "#ديوانية", "#زوارة"]
+                }
+            },
+            timingSuggestions: {
+                standard: {
+                    breakfast: { time: "7:00 AM - 9:30 AM", label: "Breakfast/ريوق" },
+                    lunch: { time: "11:00 AM - 1:00 PM", label: "Lunch/غداء" },
+                    afternoon: { time: "4:00 PM - 6:00 PM", label: "Afternoon Coffee/Sweet" },
+                    dinner: { time: "6:30 PM - 9:00 PM", label: "Dinner/عشاء" },
+                    "late-night": { time: "After 10:00 PM", label: "Late Night/Dewaniya" },
+                    "all-day": { time: "Anytime", label: "Special event announcement" }
+                },
+                ramadan: {
+                    iftar: { time: "2-3 hours before Maghrib", label: "Iftar/فطور" },
+                    ghabga: { time: "9:00 PM - 11:00 PM", label: "Post-Iftar/Ghabga/غبقة" },
+                    suhoor: { time: "12:00 AM - 2:00 AM", label: "Suhoor/سحور" }
+                }
+            }
+        };
+
+        let selectedLanguage = 'en';
+        let currentTemplate = null;
+        let selectedHashtags = new Set();
+        let selectedTiming = null;
+
+        function openContentModal(templateId) {
+            // Find the template
+            let template = null;
+            for (const category in fbData.promptsData) {
+                const found = fbData.promptsData[category].find(t => t.id === templateId);
+                if (found) {
+                    template = found;
+                    break;
+                }
+            }
+
+            if (!template) return;
+
+            currentTemplate = template;
+            const modal = document.getElementById('contentModal');
+            const modalTitle = document.getElementById('modalTitle');
+
+            modalTitle.textContent = template.title;
+
+            // Populate dynamic fields
+            const dynamicFields = document.getElementById('dynamicFields');
+            dynamicFields.innerHTML = '<h5>Fill in the details:</h5>';
+            
+            if (template.fields.length > 0) {
+                template.fields.forEach(field => {
+                    dynamicFields.innerHTML += `
+                        <div class="field-input">
+                            <label for="${field.name}">${field.name.replace(/([A-Z])/g, ' $1').trim()}:</label>
+                            <input type="text" id="${field.name}" placeholder="${field.placeholder}" required>
+                        </div>
+                    `;
+                });
+            } else {
+                dynamicFields.innerHTML += '<p>No specific fields needed for this template.</p>';
+            }
+
+            // Populate timing options
+            populateTimingOptions(template.timing);
+
+            // Populate hashtags
+            populateHashtags();
+
+            // Set visual cue
+            const visualCue = document.getElementById('visualCue');
+            const templateData = fbData.templates[template.template];
+            visualCue.innerHTML = `
+                <strong>Visual Suggestion:</strong> ${templateData.visualCue}
+                <br><br>
+                <strong>Content Structure:</strong> ${templateData.structure.replace(/\n/g, '<br>')}
+            `;
+
+            modal.style.display = 'block';
+        }
+
+        function populateTimingOptions(defaultTiming) {
+            const timingGrid = document.getElementById('timingGrid');
+            timingGrid.innerHTML = '';
+
+            const timings = currentTemplate.timing === 'iftar' || currentTemplate.timing === 'ghabga' || currentTemplate.timing === 'suhoor' 
+                ? fbData.timingSuggestions.ramadan 
+                : fbData.timingSuggestions.standard;
+
+            for (const key in timings) {
+                const timing = timings[key];
+                const option = document.createElement('div');
+                option.className = 'timing-option';
+                if (key === defaultTiming) {
+                    option.classList.add('selected');
+                    selectedTiming = key;
+                }
+                option.onclick = () => selectTiming(key);
+                option.innerHTML = `
+                    <span class="time">${timing.time}</span>
+                    <span class="label">${timing.label}</span>
+                `;
+                timingGrid.appendChild(option);
+            }
+        }
+
+        function selectTiming(timing) {
+            selectedTiming = timing;
+            document.querySelectorAll('.timing-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        function populateHashtags() {
+            // Tier 1 hashtags
+            const tier1Container = document.getElementById('tier1Hashtags');
+            tier1Container.innerHTML = '';
+            fbData.hashtagTiers.tier1.forEach(tag => {
+                tier1Container.innerHTML += createHashtagChip(tag);
+            });
+
+            // Cuisine hashtags
+            const cuisineContainer = document.getElementById('cuisineHashtags');
+            cuisineContainer.innerHTML = '';
+            for (const cuisine in fbData.hashtagTiers.cuisine) {
+                fbData.hashtagTiers.cuisine[cuisine].forEach(tag => {
+                    cuisineContainer.innerHTML += createHashtagChip(tag);
+                });
+            }
+
+            // Location hashtags
+            const locationContainer = document.getElementById('locationHashtags');
+            locationContainer.innerHTML = '';
+            for (const location in fbData.hashtagTiers.location) {
+                fbData.hashtagTiers.location[location].forEach(tag => {
+                    locationContainer.innerHTML += createHashtagChip(tag);
+                });
+            }
+
+            // Occasion hashtags
+            const occasionContainer = document.getElementById('occasionHashtags');
+            occasionContainer.innerHTML = '';
+            for (const occasion in fbData.hashtagTiers.occasion) {
+                fbData.hashtagTiers.occasion[occasion].forEach(tag => {
+                    occasionContainer.innerHTML += createHashtagChip(tag);
+                });
+            }
+        }
+
+        function createHashtagChip(tag) {
+            return `<span class="hashtag-chip" onclick="toggleHashtag('${tag}')">${tag}</span>`;
+        }
+
+        function toggleHashtag(tag) {
+            if (selectedHashtags.has(tag)) {
+                selectedHashtags.delete(tag);
+                event.target.classList.remove('selected');
+            } else {
+                selectedHashtags.add(tag);
+                event.target.classList.add('selected');
+            }
+        }
+
+        function setLanguage(lang) {
+            selectedLanguage = lang;
+            document.querySelectorAll('.language-toggle button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        async function generateContent(event) {
+            event.preventDefault();
+            
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.innerHTML = '<span class="loading"></span> Generating...';
+            generateBtn.disabled = true;
+
+            // Build the prompt with field values
+            let prompt = currentTemplate.prompt;
+            currentTemplate.fields.forEach(field => {
+                const value = document.getElementById(field.name).value;
+                prompt = prompt.replace(`{{${field.name}}}`, value);
+            });
+
+            const formData = {
+                template_id: currentTemplate.id,
+                prompt: prompt,
+                template_type: currentTemplate.template,
+                restaurant_context: document.getElementById('restaurantContext').value,
+                target_audience: document.getElementById('targetAudience').value,
+                posting_time: selectedTiming,
+                language: selectedLanguage,
+                hashtags: Array.from(selectedHashtags),
+                include_emojis: document.getElementById('includeEmojis').checked,
+                include_cta: document.getElementById('includeCallToAction').checked,
+                platform: 'instagram',
+                tone: 'friendly',
+                visual_cue: fbData.templates[currentTemplate.template].visualCue
+            };
+
+            try {
+                const response = await fetch('http://localhost:5001/api/content/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showGeneratedContent(data);
+                } else {
+                    alert('Generation failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                generateBtn.innerHTML = 'Generate Content';
+                generateBtn.disabled = false;
+            }
+        }
+
+        function showGeneratedContent(data) {
+            const generatedSection = document.getElementById('generatedContent');
+            const contentPreview = document.getElementById('contentPreview');
+            
+            // Format the content with structure
+            let formattedContent = data.content || '';
+            
+            // Add selected hashtags if not already included
+            if (selectedHashtags.size > 0) {
+                formattedContent += '\n\n' + Array.from(selectedHashtags).join(' ');
+            }
+            
+            contentPreview.textContent = formattedContent;
+            generatedSection.style.display = 'block';
+            
+            // Store for later use
+            window.generatedContentData = data;
+        }
+
+        function copyContent() {
+            const content = document.getElementById('contentPreview').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('Content copied to clipboard!');
+            });
+        }
+
+        function regenerateContent() {
+            generateContent(new Event('submit'));
+        }
+
+        function schedulePost() {
+            alert('Post scheduling feature coming soon!');
+        }
+
+        function closeContentModal() {
+            document.getElementById('contentModal').style.display = 'none';
+            document.getElementById('contentForm').reset();
+            document.getElementById('generatedContent').style.display = 'none';
+            selectedHashtags.clear();
+            selectedTiming = null;
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Add loading animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            .loading {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #ff6b6b;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

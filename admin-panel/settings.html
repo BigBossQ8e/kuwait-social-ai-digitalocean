@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Platform Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+
+        .settings-nav {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .settings-nav h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .settings-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .settings-section {
+            margin-bottom: 40px;
+        }
+
+        .settings-section h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .settings-section p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .setting-group {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .setting-group h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            flex: 1;
+        }
+
+        .setting-label h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .setting-label p {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #007bff;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .signup-url {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .signup-url input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>Kuwait Social AI - Settings</h1>
+            </div>
+            <div class="nav-buttons">
+                <a href="/admin-panel/dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
+                <button class="btn btn-success" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="settings-grid">
+            <nav class="settings-nav">
+                <h3>Settings</h3>
+                <a href="#registration" class="nav-item active">Registration Requirements</a>
+                <a href="#compliance" class="nav-item">Compliance Settings</a>
+                <a href="#features" class="nav-item">Platform Features</a>
+                <a href="#notifications" class="nav-item">Notifications</a>
+            </nav>
+
+            <div class="settings-content">
+                <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+
+                <div class="settings-section">
+                    <h2>Registration Requirements</h2>
+                    <p>Configure which fields are required for client registration. These settings apply to both admin-created accounts and client self-signup.</p>
+
+                    <!-- Basic Information -->
+                    <div class="setting-group">
+                        <h3>Basic Information</h3>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Company Name</h4>
+                                <p>Business or company name (always required)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_company_name" checked disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Contact Name</h4>
+                                <p>Primary contact person's full name</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_contact_name" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Email Address</h4>
+                                <p>Email for login (always required)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_email" checked disabled>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Phone Number</h4>
+                                <p>Contact phone number</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_phone" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Kuwait Compliance -->
+                    <div class="setting-group">
+                        <h3>Kuwait Compliance Fields</h3>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Commercial License Number</h4>
+                                <p>Kuwait business registration (Format: XXXXX/YYYY)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_commercial_license">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Civil ID</h4>
+                                <p>Contact person's Kuwait Civil ID (12 digits)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_civil_id">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Kuwait Phone Validation</h4>
+                                <p>Enforce +965 format with valid prefixes (5, 6, 9)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_kuwait_phone">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>SMS OTP Verification</h4>
+                                <p>Require phone verification before account activation</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_otp_verification">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields -->
+                    <div class="setting-group">
+                        <h3>Additional Information</h3>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Business Address</h4>
+                                <p>Physical business address</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_address">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Website URL</h4>
+                                <p>Company website (if available)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_website">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Business Category</h4>
+                                <p>Industry or business type selection</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_business_category">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Agreements -->
+                    <div class="setting-group">
+                        <h3>Required Agreements</h3>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Content Compliance Agreement</h4>
+                                <p>Agree to Kuwait content regulations</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_content_agreement" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Data Privacy Consent</h4>
+                                <p>GDPR and Kuwait privacy law compliance</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_privacy_consent" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Terms of Service</h4>
+                                <p>Platform terms and conditions</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="req_terms_agreement" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Client Signup Settings -->
+                    <div class="setting-group">
+                        <h3>Client Self-Registration</h3>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Enable Client Signup</h4>
+                                <p>Allow clients to register themselves</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="enable_client_signup" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Auto-approve Registrations</h4>
+                                <p>Automatically approve new signups (or require admin approval)</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="auto_approve_signup">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <h4>Default Trial Period</h4>
+                                <p>Grant 7-day trial to new signups</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="default_trial" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Client Signup URL:</strong> Share this link with potential clients
+                    </div>
+                    <div class="signup-url">
+                        <input type="text" value="https://kwtsocial.com/signup" readonly>
+                        <button class="btn btn-primary" onclick="copySignupUrl()">Copy URL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load saved settings
+        function loadSettings() {
+            const settings = localStorage.getItem('platform_settings');
+            if (settings) {
+                const parsed = JSON.parse(settings);
+                Object.keys(parsed).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element && element.type === 'checkbox') {
+                        element.checked = parsed[key];
+                    }
+                });
+            }
+        }
+
+        // Save settings
+        function saveSettings() {
+            const settings = {};
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:not([disabled])');
+            
+            checkboxes.forEach(checkbox => {
+                settings[checkbox.id] = checkbox.checked;
+            });
+
+            // Save to localStorage (in production, save to backend)
+            localStorage.setItem('platform_settings', JSON.stringify(settings));
+            
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = 'Settings saved successfully!';
+            successMsg.style.display = 'block';
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+
+            // In production, send to backend:
+            // apiCall('/admin/settings', { method: 'POST', body: JSON.stringify(settings) });
+        }
+
+        // Copy signup URL
+        function copySignupUrl() {
+            const input = document.querySelector('.signup-url input');
+            input.select();
+            document.execCommand('copy');
+            
+            const button = document.querySelector('.signup-url button');
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+
+        // Handle navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Load settings on page load
+        loadSettings();
+    </script>
+</body>
+</html>

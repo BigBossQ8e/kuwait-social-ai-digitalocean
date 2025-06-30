@@ -1,0 +1,57 @@
+name: kuwait-social-ai
+region: nyc
+domains:
+  - domain: kwtsocial.com
+    type: PRIMARY
+
+services:
+  - name: backend
+    github:
+      repo: your-github-username/your-repo-name
+      branch: main
+      deploy_on_push: true
+    source_dir: backend
+    dockerfile_path: backend/Dockerfile
+    http_port: 5000
+    routes:
+      - path: /api
+    envs:
+      - key: DATABASE_URL
+        type: SECRET
+        value: "postgresql://doadmin:AVNS_b-Yu6tYsVvTh4GHch3B@db-postgresql-fra1-29054-do-user-23461250-0.f.db.ondigitalocean.com:25060/defaultdb?sslmode=require"
+      - key: SECRET_KEY
+        type: SECRET
+        value: "7b930f6756db58ce82fd749fd9452fda7cee00a464ee80e33710c3c8b602d4be"
+      - key: JWT_SECRET_KEY
+        type: SECRET
+        value: "c61823794ef4e6c2b4e1d392d6b865520483a3b96cc90baa46bbb011ada5241f"
+      - key: OPENAI_API_KEY
+        type: SECRET
+        value: "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"
+      - key: CORS_ORIGINS
+        value: "https://kwtsocial.com"
+        scope: RUN_TIME
+      - key: REDIS_URL
+        value: ${redis.DATABASE_URL}
+        scope: RUN_TIME
+    
+  - name: frontend
+    github:
+      repo: your-github-username/your-repo-name
+      branch: main
+      deploy_on_push: true
+    source_dir: frontend-react
+    dockerfile_path: frontend-react/Dockerfile.digitalocean
+    http_port: 8080
+    routes:
+      - path: /
+    envs:
+      - key: VITE_API_URL
+        value: ${APP_URL}/api
+        scope: BUILD_TIME
+
+databases:
+  - name: redis
+    engine: REDIS
+    production: false
+    cluster_name: kuwait-social-redis

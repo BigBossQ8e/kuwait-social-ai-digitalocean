@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Platform Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --white: #ffffff;
+            --gray: #95a5a6;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: var(--gray);
+        }
+        
+        .breadcrumb {
+            margin-bottom: 1rem;
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--info);
+            text-decoration: none;
+        }
+        
+        /* Settings Navigation */
+        .settings-nav {
+            background: white;
+            padding: 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .settings-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .settings-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .settings-tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .settings-tab.active {
+            border-bottom-color: var(--info);
+            color: var(--info);
+            background: #f8f9fa;
+        }
+        
+        /* Settings Content */
+        .settings-content {
+            display: none;
+        }
+        
+        .settings-content.active {
+            display: block;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .section h2 {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .section-description {
+            color: var(--gray);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--dark);
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--info);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary { background: var(--info); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-secondary { background: var(--gray); color: white; }
+        
+        .btn:hover { opacity: 0.9; }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.875rem;
+        }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .feature-card {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .feature-info h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .feature-info p {
+            font-size: 0.75rem;
+            color: var(--gray);
+            margin: 0;
+        }
+        
+        /* API Key Display */
+        .api-key-display {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .api-key-display input {
+            font-family: monospace;
+            background: #f8f9fa;
+        }
+        
+        .api-key-display button {
+            white-space: nowrap;
+        }
+        
+        /* Color Picker */
+        .color-picker-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--info);
+            background: #f8f9fa;
+        }
+        
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .status-dot.inactive {
+            background: var(--danger);
+        }
+        
+        .status-dot.warning {
+            background: var(--warning);
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .settings-tabs {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="admin-panel-complete.html">Admin Panel</a> / Platform Settings
+        </div>
+        
+        <!-- Header -->
+        <div class="header">
+            <h1>Platform Settings</h1>
+            <p>Configure global settings for Kuwait Social AI platform</p>
+        </div>
+        
+        <!-- Settings Navigation -->
+        <div class="settings-nav">
+            <div class="settings-tabs">
+                <div class="settings-tab active" onclick="showSettingsTab('general')">
+                    <span>⚙️</span> General
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('branding')">
+                    <span>🎨</span> Branding
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('api')">
+                    <span>🔌</span> API Keys
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('email')">
+                    <span>📧</span> Email
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('features')">
+                    <span>🎯</span> Features
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('pricing')">
+                    <span>💰</span> Pricing
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('localization')">
+                    <span>🌍</span> Localization
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('security')">
+                    <span>🔒</span> Security
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('integrations')">
+                    <span>🔗</span> Integrations
+                </div>
+                <div class="settings-tab" onclick="showSettingsTab('advanced')">
+                    <span>🚀</span> Advanced
+                </div>
+            </div>
+        </div>
+        
+        <!-- General Settings -->
+        <div id="general" class="settings-content active">
+            <div class="section">
+                <div class="section-header">
+                    <h2>General Settings</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('general')">Save Changes</button>
+                </div>
+                
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Platform Name</label>
+                            <input type="text" class="form-control" value="Kuwait Social AI" placeholder="Enter platform name">
+                            <small>This name appears in emails and notifications</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Platform URL</label>
+                            <input type="url" class="form-control" value="https://kwtsocial.com" placeholder="https://yourdomain.com">
+                            <small>Main URL of your platform</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Support Email</label>
+                            <input type="email" class="form-control" value="support@kwtsocial.com" placeholder="support@yourdomain.com">
+                            <small>Users will contact this email for support</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Admin Email</label>
+                            <input type="email" class="form-control" value="admin@kwtsocial.com" placeholder="admin@yourdomain.com">
+                            <small>System notifications will be sent here</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Platform Description</label>
+                        <textarea class="form-control" placeholder="Enter platform description">AI-powered social media management platform designed specifically for Kuwait businesses, featuring Arabic language support, local trends, and cultural insights.</textarea>
+                        <small>Used in meta descriptions and about pages</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Time Zone</label>
+                        <select class="form-control">
+                            <option selected>Asia/Kuwait (GMT+3)</option>
+                            <option>UTC</option>
+                            <option>Asia/Dubai (GMT+4)</option>
+                            <option>Asia/Riyadh (GMT+3)</option>
+                        </select>
+                        <small>Default timezone for all platform operations</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Maintenance Mode</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Enable maintenance mode (blocks all user access)</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Branding Settings -->
+        <div id="branding" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Branding Settings</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('branding')">Save Changes</button>
+                </div>
+                
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Logo</label>
+                            <div class="file-upload" onclick="document.getElementById('logo-upload').click()">
+                                <input type="file" id="logo-upload" accept="image/*">
+                                <p>📁 Click to upload logo</p>
+                                <small>PNG or SVG, max 2MB</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Favicon</label>
+                            <div class="file-upload" onclick="document.getElementById('favicon-upload').click()">
+                                <input type="file" id="favicon-upload" accept="image/*">
+                                <p>📁 Click to upload favicon</p>
+                                <small>ICO or PNG, 32x32px</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Primary Color</label>
+                            <div class="color-picker-group">
+                                <input type="color" value="#1976d2">
+                                <input type="text" class="form-control" value="#1976d2" style="width: 100px;">
+                                <div class="color-preview" style="background: #1976d2;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Secondary Color</label>
+                            <div class="color-picker-group">
+                                <input type="color" value="#dc004e">
+                                <input type="text" class="form-control" value="#dc004e" style="width: 100px;">
+                                <div class="color-preview" style="background: #dc004e;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Custom CSS</label>
+                        <textarea class="form-control" placeholder="/* Add custom CSS here */" style="font-family: monospace; min-height: 200px;">/* Custom branding CSS */
+.header {
+    background-color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}</textarea>
+                        <small>Override default styles with custom CSS</small>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- API Keys Settings -->
+        <div id="api" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>External API Keys</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('api')">Save Changes</button>
+                </div>
+                
+                <div class="alert alert-warning">
+                    ⚠️ Keep these keys secure. They provide access to external services.
+                </div>
+                
+                <form>
+                    <div class="form-group">
+                        <label>OpenAI API Key</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="sk-proj-YmGJAOnT_RxwVArYOFP_RU2..." id="openai-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('openai-key')">Show</button>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="regenerateKey('openai')">Regenerate</button>
+                        </div>
+                        <small>Used for AI content generation</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Instagram Graph API</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="IGQVJXcGlhWkFpZAHR3..." id="instagram-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('instagram-key')">Show</button>
+                        </div>
+                        <small>For Instagram integration</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Snapchat Marketing API</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="snap_marketing_api_key..." id="snapchat-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('snapchat-key')">Show</button>
+                        </div>
+                        <small>For Snapchat integration</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>TikTok API</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="tiktok_api_key_here..." id="tiktok-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('tiktok-key')">Show</button>
+                        </div>
+                        <small>For TikTok integration</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Telegram Bot Token</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="7890123456:AAF-vH9..." id="telegram-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('telegram-key')">Show</button>
+                        </div>
+                        <small>For Telegram bot functionality</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Google Maps API Key</label>
+                        <div class="api-key-display">
+                            <input type="password" class="form-control" value="AIzaSyB..." id="gmaps-key">
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleKeyVisibility('gmaps-key')">Show</button>
+                        </div>
+                        <small>For location-based features</small>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>API Usage Limits</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Monthly Limit</th>
+                            <th>Current Usage</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>OpenAI</td>
+                            <td>50,000 requests</td>
+                            <td>12,456 (24.9%)</td>
+                            <td><span class="badge badge-success">Healthy</span></td>
+                        </tr>
+                        <tr>
+                            <td>Instagram</td>
+                            <td>200 posts/day</td>
+                            <td>87 (43.5%)</td>
+                            <td><span class="badge badge-success">Good</span></td>
+                        </tr>
+                        <tr>
+                            <td>Snapchat</td>
+                            <td>1,000 API calls/hour</td>
+                            <td>234 (23.4%)</td>
+                            <td><span class="badge badge-success">Good</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Email Settings -->
+        <div id="email" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Email Configuration</h2>
+                    <button class="btn btn-primary btn-sm" onclick="testEmailSettings()">Test Connection</button>
+                </div>
+                
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SMTP Host</label>
+                            <input type="text" class="form-control" value="smtp.gmail.com" placeholder="smtp.example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>SMTP Port</label>
+                            <input type="number" class="form-control" value="587" placeholder="587">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>SMTP Username</label>
+                            <input type="text" class="form-control" value="noreply@kwtsocial.com" placeholder="username@domain.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>SMTP Password</label>
+                            <input type="password" class="form-control" value="••••••••" placeholder="Enter SMTP password">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Security</label>
+                        <select class="form-control">
+                            <option selected>TLS</option>
+                            <option>SSL</option>
+                            <option>None</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>From Name</label>
+                        <input type="text" class="form-control" value="Kuwait Social AI" placeholder="Your Platform Name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>From Email</label>
+                        <input type="email" class="form-control" value="noreply@kwtsocial.com" placeholder="noreply@yourdomain.com">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>Email Templates</h2>
+                <div class="form-group">
+                    <label>Template</label>
+                    <select class="form-control" onchange="loadEmailTemplate(this.value)">
+                        <option>Welcome Email</option>
+                        <option>Password Reset</option>
+                        <option>Subscription Expiry</option>
+                        <option>Payment Failed</option>
+                        <option>Weekly Report</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" class="form-control" value="Welcome to Kuwait Social AI!" id="email-subject">
+                </div>
+                
+                <div class="form-group">
+                    <label>Body</label>
+                    <textarea class="form-control" style="min-height: 300px;" id="email-body">
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { background: #1976d2; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .button { background: #1976d2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to Kuwait Social AI!</h1>
+        </div>
+        <div class="content">
+            <p>Hi {{user_name}},</p>
+            <p>Thank you for joining Kuwait Social AI. We're excited to help you grow your social media presence!</p>
+            <p><a href="{{activation_link}}" class="button">Activate Your Account</a></p>
+            <p>Best regards,<br>Kuwait Social AI Team</p>
+        </div>
+    </div>
+</body>
+</html></textarea>
+                </div>
+                
+                <button class="btn btn-primary">Save Template</button>
+                <button class="btn btn-secondary">Preview</button>
+            </div>
+        </div>
+        
+        <!-- Features Settings -->
+        <div id="features" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Feature Management</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('features')">Save Changes</button>
+                </div>
+                
+                <div class="section-description">
+                    Enable or disable features globally across the platform
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>AI Content Generation</h4>
+                            <p>OpenAI-powered content creation</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Competitor Analysis</h4>
+                            <p>Track and analyze competitors</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Hashtag Strategies</h4>
+                            <p>AI-powered hashtag recommendations</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Multi-Platform Posting</h4>
+                            <p>Post to multiple platforms at once</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Telegram Bot</h4>
+                            <p>Telegram bot integration</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Email Reports</h4>
+                            <p>Weekly/monthly email reports</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Prayer Time Integration</h4>
+                            <p>Kuwait prayer time scheduling</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Arabic Language Support</h4>
+                            <p>Full Arabic UI and content</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Content Calendar</h4>
+                            <p>Visual content scheduling</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Team Collaboration</h4>
+                            <p>Multi-user access per account</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Beta Features</h2>
+                <div class="alert alert-info">
+                    ℹ️ Beta features are experimental and may change
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>AI Video Generation</h4>
+                            <p>Create videos from text</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Voice Comments</h4>
+                            <p>Audio response to comments</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pricing Settings -->
+        <div id="pricing" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Subscription Plans</h2>
+                    <button class="btn btn-success btn-sm" onclick="addNewPlan()">+ Add Plan</button>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Price (KWD)</th>
+                            <th>Billing</th>
+                            <th>Features</th>
+                            <th>Active Users</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Trial</strong></td>
+                            <td>0</td>
+                            <td>14 days</td>
+                            <td>Basic features</td>
+                            <td>23</td>
+                            <td><span class="badge badge-info">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Basic</strong></td>
+                            <td>29</td>
+                            <td>Monthly</td>
+                            <td>3 social accounts, 30 posts/month</td>
+                            <td>45</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Professional</strong></td>
+                            <td>49</td>
+                            <td>Monthly</td>
+                            <td>5 accounts, unlimited posts, analytics</td>
+                            <td>52</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Edit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enterprise</strong></td>
+                            <td>99</td>
+                            <td>Monthly</td>
+                            <td>Unlimited everything + priority support</td>
+                            <td>18</td>
+                            <td><span class="badge badge-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>Payment Settings</h2>
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Gateway</label>
+                            <select class="form-control">
+                                <option>Stripe</option>
+                                <option>PayPal</option>
+                                <option>MyFatoorah (Kuwait)</option>
+                                <option>Tap Payments</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Default Currency</label>
+                            <select class="form-control">
+                                <option selected>KWD - Kuwaiti Dinar</option>
+                                <option>USD - US Dollar</option>
+                                <option>EUR - Euro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Tax Settings</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Enable tax calculation</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tax Rate (%)</label>
+                            <input type="number" class="form-control" value="5" step="0.1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Tax Name</label>
+                            <input type="text" class="form-control" value="VAT" placeholder="e.g., VAT, GST">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Localization Settings -->
+        <div id="localization" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Language & Localization</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('localization')">Save Changes</button>
+                </div>
+                
+                <form>
+                    <div class="form-group">
+                        <label>Default Language</label>
+                        <select class="form-control">
+                            <option>English</option>
+                            <option selected>English + Arabic</option>
+                            <option>Arabic Only</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Date Format</label>
+                        <select class="form-control">
+                            <option>DD/MM/YYYY</option>
+                            <option>MM/DD/YYYY</option>
+                            <option>YYYY-MM-DD</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Time Format</label>
+                        <select class="form-control">
+                            <option>12 Hour (AM/PM)</option>
+                            <option>24 Hour</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>First Day of Week</label>
+                        <select class="form-control">
+                            <option>Sunday</option>
+                            <option>Monday</option>
+                            <option selected>Saturday</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>Kuwait-Specific Settings</h2>
+                <form>
+                    <div class="form-group">
+                        <label>Prayer Time Source</label>
+                        <select class="form-control">
+                            <option>Kuwait Ministry of Awqaf</option>
+                            <option>IslamicFinder API</option>
+                            <option>Aladhan API</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>National Holidays</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Automatically pause posts on Kuwait national holidays</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Ramadan Mode</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Enable special Ramadan features and content suggestions</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Weekend Days</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                            <label><input type="checkbox"> Thursday</label>
+                            <label><input type="checkbox" checked> Friday</label>
+                            <label><input type="checkbox" checked> Saturday</label>
+                            <label><input type="checkbox"> Sunday</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div id="security" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Security Settings</h2>
+                    <button class="btn btn-primary btn-sm" onclick="saveSettings('security')">Save Changes</button>
+                </div>
+                
+                <form>
+                    <div class="form-group">
+                        <label>Password Policy</label>
+                        <div style="margin-top: 0.5rem;">
+                            <label><input type="checkbox" checked> Minimum 8 characters</label><br>
+                            <label><input type="checkbox" checked> Require uppercase letter</label><br>
+                            <label><input type="checkbox" checked> Require lowercase letter</label><br>
+                            <label><input type="checkbox" checked> Require number</label><br>
+                            <label><input type="checkbox" checked> Require special character</label><br>
+                            <label><input type="checkbox"> Password expiry (90 days)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Two-Factor Authentication</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Require 2FA for all admin users</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Session Timeout (minutes)</label>
+                            <input type="number" class="form-control" value="60" min="5" max="1440">
+                            <small>Auto-logout after inactivity</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Max Login Attempts</label>
+                            <input type="number" class="form-control" value="5" min="3" max="10">
+                            <small>Before account lockout</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>IP Whitelist (Admin Access)</label>
+                        <textarea class="form-control" placeholder="One IP address per line">192.168.1.1
+203.0.113.0/24</textarea>
+                        <small>Leave empty to allow all IPs</small>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>Rate Limiting</h2>
+                <form>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>API Rate Limit (per hour)</label>
+                            <input type="number" class="form-control" value="1000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Login Rate Limit (per hour)</label>
+                            <input type="number" class="form-control" value="10">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>DDoS Protection</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Enable Cloudflare DDoS protection</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Integrations Settings -->
+        <div id="integrations" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Third-Party Integrations</h2>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Google Analytics</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot"></span>
+                                Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-secondary">Configure</button>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Facebook Business</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot"></span>
+                                Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-secondary">Configure</button>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Slack Notifications</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot inactive"></span>
+                                Not Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-primary">Connect</button>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Zapier</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot inactive"></span>
+                                Not Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-primary">Connect</button>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>WhatsApp Business</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot"></span>
+                                Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-secondary">Configure</button>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-info">
+                            <h4>Sentry Error Tracking</h4>
+                            <p class="status-indicator">
+                                <span class="status-dot"></span>
+                                Connected
+                            </p>
+                        </div>
+                        <button class="btn btn-sm btn-secondary">Configure</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Webhook Settings</h2>
+                <form>
+                    <div class="form-group">
+                        <label>Webhook URL</label>
+                        <input type="url" class="form-control" placeholder="https://your-server.com/webhook">
+                        <small>Receive real-time notifications about platform events</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Events to Send</label>
+                        <div style="margin-top: 0.5rem;">
+                            <label><input type="checkbox" checked> New User Registration</label><br>
+                            <label><input type="checkbox" checked> Subscription Created/Updated</label><br>
+                            <label><input type="checkbox" checked> Payment Success/Failed</label><br>
+                            <label><input type="checkbox"> Post Published</label><br>
+                            <label><input type="checkbox"> Error Occurred</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Secret Key</label>
+                        <input type="text" class="form-control" value="webhook_secret_key_here" readonly>
+                        <small>Use this to verify webhook authenticity</small>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Advanced Settings -->
+        <div id="advanced" class="settings-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>Advanced Settings</h2>
+                    <div class="alert alert-warning" style="margin: 0;">
+                        ⚠️ Be careful with these settings
+                    </div>
+                </div>
+                
+                <form>
+                    <div class="form-group">
+                        <label>Debug Mode</label>
+                        <div class="toggle-switch">
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Enable debug logging (impacts performance)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Database Connection Pool Size</label>
+                        <input type="number" class="form-control" value="20" min="5" max="100">
+                        <small>Number of concurrent database connections</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Redis Cache TTL (seconds)</label>
+                        <input type="number" class="form-control" value="3600" min="60">
+                        <small>Default cache expiration time</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Job Queue Workers</label>
+                        <input type="number" class="form-control" value="4" min="1" max="16">
+                        <small>Number of background job processors</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>File Upload Limit (MB)</label>
+                        <input type="number" class="form-control" value="50" min="1" max="500">
+                        <small>Maximum file size for uploads</small>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2>System Maintenance</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <button class="btn btn-warning" onclick="clearCache()">
+                        🗑️ Clear Cache
+                    </button>
+                    <button class="btn btn-warning" onclick="optimizeDatabase()">
+                        🔧 Optimize Database
+                    </button>
+                    <button class="btn btn-warning" onclick="rebuildSearchIndex()">
+                        🔍 Rebuild Search Index
+                    </button>
+                    <button class="btn btn-danger" onclick="resetPlatform()">
+                        ⚠️ Factory Reset
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Export/Import Settings</h2>
+                
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <div>
+                        <h4>Export Configuration</h4>
+                        <p style="color: var(--gray); font-size: 0.875rem;">Download all platform settings as JSON</p>
+                        <button class="btn btn-primary">📥 Export Settings</button>
+                    </div>
+                    
+                    <div>
+                        <h4>Import Configuration</h4>
+                        <p style="color: var(--gray); font-size: 0.875rem;">Restore settings from backup</p>
+                        <button class="btn btn-secondary">📤 Import Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Save Actions -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="saveAllSettings()">Save All Changes</button>
+            <button class="btn btn-secondary" onclick="resetChanges()">Reset Changes</button>
+            <button class="btn btn-danger" onclick="window.location.href='admin-panel-complete.html'">Back to Admin Panel</button>
+        </div>
+    </div>
+    
+    <script>
+        // Show settings tab
+        function showSettingsTab(tabId) {
+            // Hide all content
+            document.querySelectorAll('.settings-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Mark tab as active
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Toggle API key visibility
+        function toggleKeyVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const button = event.target;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Show';
+            }
+        }
+        
+        // Save settings
+        function saveSettings(section) {
+            alert(`Saving ${section} settings...`);
+            
+            // Show success message
+            setTimeout(() => {
+                alert(`${section} settings saved successfully!`);
+            }, 1000);
+        }
+        
+        // Save all settings
+        function saveAllSettings() {
+            if (confirm('Save all platform settings?')) {
+                alert('All settings saved successfully!');
+            }
+        }
+        
+        // Reset changes
+        function resetChanges() {
+            if (confirm('Reset all unsaved changes?')) {
+                location.reload();
+            }
+        }
+        
+        // Test email settings
+        function testEmailSettings() {
+            alert('Sending test email...');
+            setTimeout(() => {
+                alert('Test email sent successfully! Check your inbox.');
+            }, 2000);
+        }
+        
+        // Load email template
+        function loadEmailTemplate(template) {
+            const templates = {
+                'Welcome Email': {
+                    subject: 'Welcome to Kuwait Social AI!',
+                    body: 'Welcome email HTML content...'
+                },
+                'Password Reset': {
+                    subject: 'Reset Your Password',
+                    body: 'Password reset HTML content...'
+                }
+            };
+            
+            // Update form fields based on selected template
+            alert(`Loading ${template} template...`);
+        }
+        
+        // Maintenance functions
+        function clearCache() {
+            if (confirm('Clear all cached data? This may temporarily slow down the platform.')) {
+                alert('Cache cleared successfully!');
+            }
+        }
+        
+        function optimizeDatabase() {
+            if (confirm('Optimize database? This may take several minutes.')) {
+                alert('Database optimization started. You will be notified when complete.');
+            }
+        }
+        
+        function rebuildSearchIndex() {
+            if (confirm('Rebuild search index? This may affect search functionality temporarily.')) {
+                alert('Search index rebuild started.');
+            }
+        }
+        
+        function resetPlatform() {
+            if (confirm('⚠️ WARNING: This will reset ALL platform settings to defaults. Are you sure?')) {
+                if (confirm('This action cannot be undone. Type "RESET" to confirm.')) {
+                    alert('Platform reset initiated. Please wait...');
+                }
+            }
+        }
+        
+        // Add new pricing plan
+        function addNewPlan() {
+            alert('Add New Plan feature coming soon!');
+        }
+        
+        // Regenerate API key
+        function regenerateKey(service) {
+            if (confirm(`Regenerate ${service} API key? This will invalidate the current key.`)) {
+                alert(`New ${service} API key generated!`);
+            }
+        }
+    </script>
+</body>
+</html>

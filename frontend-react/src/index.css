@@ -1,0 +1,38 @@
+/* Import Google Fonts for better Arabic support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Arabic font support */
+[dir="rtl"] {
+  font-family: 'Noto Sans Arabic', 'Inter', system-ui, Arial, sans-serif;
+}
+
+/* Ensure Arabic text renders properly */
+:lang(ar) {
+  font-family: 'Noto Sans Arabic', 'Inter', system-ui, Arial, sans-serif;
+}
+
+/* Reset link styles - let components handle their own */
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Let components define their own styles */

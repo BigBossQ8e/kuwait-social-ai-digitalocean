@@ -1,0 +1,245 @@
+"""
+Normalized models for JSON field replacement
+
+These models replace JSON columns with proper relational structures for better
+query performance and data integrity.
+"""
+
+from datetime import datetime
+from sqlalchemy import func
+from . import db
+
+
+# Competitor Analysis Normalized Models
+
+class CompetitorAnalysis(db.Model):
+    """Main competitor analysis model with normalized relationships"""
+    __tablename__ = 'competitor_analysis'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    competitor_id = db.Column(db.Integer, db.ForeignKey('competitors.id'), nullable=False)
+    analysis_date = db.Column(db.Date, nullable=False, index=True)
+    
+    # Aggregate metrics (kept as regular columns)
+    total_posts = db.Column(db.Integer, default=0)
+    avg_engagement_rate = db.Column(db.Float, default=0.0)
+    follower_count = db.Column(db.Integer, default=0)
+    following_count = db.Column(db.Integer, default=0)
+    
+    # Analysis metadata
+    analysis_type = db.Column(db.String(50))  # daily, weekly, monthly
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships (replacing JSON columns)
+    top_hashtags = db.relationship('CompetitorTopHashtag', backref='analysis', lazy='dynamic')
+    top_posts = db.relationship('CompetitorTopPost', backref='analysis', lazy='dynamic')
+    audience_demographics = db.relationship('CompetitorAudienceDemographic', backref='analysis', lazy='dynamic')
+    
+    # Existing relationship
+    competitor = db.relationship('Competitor', backref='analyses')
+    
+    def __repr__(self):
+        return f'<CompetitorAnalysis {self.competitor.name} - {self.analysis_date}>'
+
+
+class CompetitorTopHashtag(db.Model):
+    """Normalized table for competitor top hashtags"""
+    __tablename__ = 'competitor_top_hashtags'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    competitor_id = db.Column(db.Integer, db.ForeignKey('competitors.id'), nullable=False, index=True)
+    hashtag = db.Column(db.String(100), nullable=False, index=True)
+    usage_count = db.Column(db.Integer, default=0)
+    avg_engagement = db.Column(db.Float, default=0.0)
+    rank = db.Column(db.Integer)
+    analysis_date = db.Column(db.Date, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    competitor = db.relationship('Competitor')
+    
+    def __repr__(self):
+        return f'<CompetitorTopHashtag {self.hashtag} - Rank: {self.rank}>'
+
+
+class CompetitorTopPost(db.Model):
+    """Normalized table for competitor top posts"""
+    __tablename__ = 'competitor_top_posts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    competitor_id = db.Column(db.Integer, db.ForeignKey('competitors.id'), nullable=False, index=True)
+    post_id = db.Column(db.String(100), nullable=False, index=True)
+    platform = db.Column(db.String(20), nullable=False, index=True)
+    content_type = db.Column(db.String(50))
+    caption = db.Column(db.Text)
+    media_url = db.Column(db.String(500))
+    likes = db.Column(db.Integer, default=0)
+    comments = db.Column(db.Integer, default=0)
+    shares = db.Column(db.Integer, default=0)
+    engagement_rate = db.Column(db.Float, default=0.0, index=True)
+    posted_at = db.Column(db.DateTime)
+    rank = db.Column(db.Integer)
+    analysis_date = db.Column(db.Date, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    competitor = db.relationship('Competitor')
+    
+    def __repr__(self):
+        return f'<CompetitorTopPost {self.post_id} - Engagement: {self.engagement_rate}%>'
+
+
+class CompetitorAudienceDemographic(db.Model):
+    """Normalized table for competitor audience demographics"""
+    __tablename__ = 'competitor_audience_demographics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    competitor_id = db.Column(db.Integer, db.ForeignKey('competitors.id'), nullable=False, index=True)
+    demographic_type = db.Column(db.String(50), nullable=False, index=True)  # age_group, gender, location, interest
+    demographic_value = db.Column(db.String(100), nullable=False)
+    percentage = db.Column(db.Float, default=0.0)
+    count = db.Column(db.Integer, default=0)
+    analysis_date = db.Column(db.Date, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    competitor = db.relationship('Competitor')
+    
+    def __repr__(self):
+        return f'<CompetitorAudienceDemographic {self.demographic_type}: {self.demographic_value} - {self.percentage}%>'
+
+
+# Hashtag Strategy Normalized Models
+
+class HashtagStrategy(db.Model):
+    """Main hashtag strategy model with normalized relationships"""
+    __tablename__ = 'hashtag_strategies'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    strategy_name = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    
+    # Strategy metadata
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Performance metrics
+    total_uses = db.Column(db.Integer, default=0)
+    avg_performance_score = db.Column(db.Float, default=0.0)
+    
+    # Relationships (replacing JSON columns)
+    trending_hashtags = db.relationship('TrendingHashtag', backref='strategy', lazy='dynamic')
+    recommended_combinations = db.relationship('HashtagCombination', backref='strategy', lazy='dynamic')
+    
+    # Existing relationship
+    client = db.relationship('Client')
+    
+    def __repr__(self):
+        return f'<HashtagStrategy {self.strategy_name}>'
+
+
+class TrendingHashtag(db.Model):
+    """Normalized table for trending hashtags"""
+    __tablename__ = 'trending_hashtags'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False, index=True)
+    hashtag = db.Column(db.String(100), nullable=False, index=True)
+    trend_score = db.Column(db.Float, default=0.0, index=True)
+    growth_rate = db.Column(db.Float, default=0.0)
+    category = db.Column(db.String(50), index=True)  # kuwait, ramadan, national_day, etc.
+    avg_engagement = db.Column(db.Float, default=0.0)
+    post_count = db.Column(db.Integer, default=0)
+    is_seasonal = db.Column(db.Boolean, default=False)
+    peak_time = db.Column(db.Time)
+    valid_from = db.Column(db.DateTime, nullable=False)
+    valid_until = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client')
+    
+    @property
+    def is_valid(self):
+        """Check if the trending hashtag is still valid"""
+        now = datetime.utcnow()
+        if self.valid_until:
+            return self.valid_from <= now <= self.valid_until
+        return self.valid_from <= now
+    
+    def __repr__(self):
+        return f'<TrendingHashtag {self.hashtag} - Score: {self.trend_score}>'
+
+
+class HashtagCombination(db.Model):
+    """Normalized table for recommended hashtag combinations"""
+    __tablename__ = 'hashtag_combinations'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False, index=True)
+    combination_name = db.Column(db.String(200))
+    content_type = db.Column(db.String(50), index=True)  # product, promotion, cultural, etc.
+    expected_reach = db.Column(db.Integer, default=0)
+    expected_engagement_rate = db.Column(db.Float, default=0.0)
+    confidence_score = db.Column(db.Float, default=0.0, index=True)
+    is_active = db.Column(db.Boolean, default=True, index=True)
+    valid_from = db.Column(db.DateTime, nullable=False)
+    valid_until = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_used = db.Column(db.DateTime)
+    
+    # Relationships
+    client = db.relationship('Client')
+    hashtags = db.relationship('HashtagCombinationItem', backref='combination', lazy='dynamic', 
+                              order_by='HashtagCombinationItem.position')
+    
+    def get_hashtags_list(self):
+        """Get hashtags as a simple list"""
+        return [item.hashtag for item in self.hashtags]
+    
+    def get_primary_hashtags(self):
+        """Get only primary hashtags"""
+        return [item.hashtag for item in self.hashtags.filter_by(is_primary=True)]
+    
+    def __repr__(self):
+        return f'<HashtagCombination {self.combination_name} - Score: {self.confidence_score}>'
+
+
+class HashtagCombinationItem(db.Model):
+    """Individual hashtags within a combination"""
+    __tablename__ = 'hashtag_combination_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    combination_id = db.Column(db.Integer, db.ForeignKey('hashtag_combinations.id'), nullable=False, index=True)
+    hashtag = db.Column(db.String(100), nullable=False, index=True)
+    position = db.Column(db.Integer, default=0)  # Order in the combination
+    is_primary = db.Column(db.Boolean, default=False)  # Primary vs supporting hashtag
+    
+    def __repr__(self):
+        return f'<HashtagCombinationItem {self.hashtag} - Position: {self.position}>'
+
+
+# Update existing Competitor model to include new relationships
+def update_competitor_model():
+    """
+    Add these relationships to the existing Competitor model:
+    
+    top_hashtags = db.relationship('CompetitorTopHashtag', backref='competitor_detail', lazy='dynamic')
+    top_posts = db.relationship('CompetitorTopPost', backref='competitor_detail', lazy='dynamic')
+    audience_demographics = db.relationship('CompetitorAudienceDemographic', backref='competitor_detail', lazy='dynamic')
+    """
+    pass
+
+
+# Update existing Client model to include new relationships
+def update_client_model():
+    """
+    Add these relationships to the existing Client model:
+    
+    hashtag_strategies = db.relationship('HashtagStrategy', backref='client_detail', lazy='dynamic')
+    trending_hashtags = db.relationship('TrendingHashtag', backref='client_detail', lazy='dynamic')
+    hashtag_combinations = db.relationship('HashtagCombination', backref='client_detail', lazy='dynamic')
+    """
+    pass

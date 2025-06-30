@@ -1,0 +1,302 @@
+"""
+Customer Engagement Models for Kuwait Social AI
+"""
+
+from datetime import datetime
+from sqlalchemy import func
+from . import db
+
+
+class CustomerEngagement(db.Model):
+    """Track customer engagement and interactions"""
+    __tablename__ = 'customer_engagements'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+    
+    # Customer information
+    customer_name = db.Column(db.String(100))
+    customer_id_external = db.Column(db.String(100))  # Platform-specific ID
+    platform = db.Column(db.String(20), nullable=False)  # instagram, twitter, etc.
+    
+    # Engagement details
+    engagement_type = db.Column(db.String(20), nullable=False)  # comment, message, mention, review
+    content = db.Column(db.Text)
+    sentiment = db.Column(db.String(20))  # positive, negative, neutral
+    
+    # Response tracking
+    responded = db.Column(db.Boolean, default=False)
+    response_time = db.Column(db.Integer)  # in minutes
+    response_content = db.Column(db.Text)
+    responded_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    
+    # Analytics
+    priority = db.Column(db.String(20), default='normal')  # high, normal, low
+    tags = db.Column(db.JSON)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='customer_engagements')
+    post = db.relationship('Post', back_populates='customer_engagements')
+    responder = db.relationship('User', back_populates='engagement_responses')
+    
+    def __repr__(self):
+        return f'<CustomerEngagement {self.id} - {self.engagement_type}>'
+
+
+class CommentTemplate(db.Model):
+    """AI-powered comment response templates"""
+    __tablename__ = 'comment_templates'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # Template details
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50))  # greeting, thank_you, apology, product_info, etc.
+    intent = db.Column(db.String(50))  # question, complaint, praise, inquiry
+    
+    # Response templates
+    template_en = db.Column(db.Text, nullable=False)
+    template_ar = db.Column(db.Text)
+    
+    # Personalization tokens
+    tokens = db.Column(db.JSON)  # {customer_name}, {product}, {order_number}, etc.
+    
+    # Usage tracking
+    usage_count = db.Column(db.Integer, default=0)
+    last_used = db.Column(db.DateTime)
+    effectiveness_score = db.Column(db.Float, default=0.0)
+    
+    # AI customization
+    tone = db.Column(db.String(20))  # formal, friendly, professional, casual
+    include_emoji = db.Column(db.Boolean, default=False)
+    max_length = db.Column(db.Integer, default=280)
+    
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='comment_templates')
+    suggested_messages = db.relationship('UnifiedInboxMessage', back_populates='suggested_template')
+    
+    def __repr__(self):
+        return f'<CommentTemplate {self.name}>'
+
+
+class UnifiedInboxMessage(db.Model):
+    """Unified inbox for all social media messages"""
+    __tablename__ = 'unified_inbox_messages'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # Message source
+    platform = db.Column(db.String(20), nullable=False)  # instagram, snapchat
+    message_type = db.Column(db.String(20))  # comment, dm, mention, story_reply
+    platform_message_id = db.Column(db.String(100), unique=True)
+    
+    # Message details
+    sender_username = db.Column(db.String(100))
+    sender_name = db.Column(db.String(200))
+    sender_profile_pic = db.Column(db.String(500))
+    is_verified_sender = db.Column(db.Boolean, default=False)
+    
+    # Content
+    message_text = db.Column(db.Text)
+    media_urls = db.Column(db.JSON)
+    parent_post_id = db.Column(db.String(100))  # For comments
+    parent_post_caption = db.Column(db.Text)
+    
+    # Analysis
+    sentiment = db.Column(db.String(20))  # positive, negative, neutral
+    intent = db.Column(db.String(50))  # question, complaint, praise, inquiry, spam
+    language = db.Column(db.String(10))  # en, ar
+    urgency_score = db.Column(db.Integer, default=0)  # 0-10
+    
+    # Response tracking
+    is_read = db.Column(db.Boolean, default=False)
+    is_responded = db.Column(db.Boolean, default=False)
+    responded_at = db.Column(db.DateTime)
+    response_text = db.Column(db.Text)
+    response_time_minutes = db.Column(db.Integer)
+    
+    # AI suggestions
+    suggested_response = db.Column(db.Text)
+    suggested_template_id = db.Column(db.Integer, db.ForeignKey('comment_templates.id'))
+    confidence_score = db.Column(db.Float)
+    
+    # Customer info
+    is_existing_customer = db.Column(db.Boolean, default=False)
+    customer_value_score = db.Column(db.Float)  # Based on past interactions
+    
+    # Metadata
+    received_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='inbox_messages')
+    suggested_template = db.relationship('CommentTemplate', back_populates='suggested_messages')
+    thread_messages = db.relationship('MessageThread', back_populates='original_message', lazy='dynamic')
+    
+    def __repr__(self):
+        return f'<UnifiedInboxMessage {self.platform} - {self.message_type}>'
+
+
+class MessageThread(db.Model):
+    """Thread of messages for conversations"""
+    __tablename__ = 'message_threads'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    original_message_id = db.Column(db.Integer, db.ForeignKey('unified_inbox_messages.id'), nullable=False)
+    
+    # Message details
+    sender_type = db.Column(db.String(20))  # customer, business
+    message_text = db.Column(db.Text)
+    
+    # Metadata
+    sent_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def __repr__(self):
+        return f'<MessageThread {self.sender_type}>'
+
+
+class ResponseMetrics(db.Model):
+    """Track engagement response metrics"""
+    __tablename__ = 'response_metrics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # Time period
+    date = db.Column(db.Date, nullable=False)
+    
+    # Volume metrics
+    total_messages_received = db.Column(db.Integer, default=0)
+    total_comments = db.Column(db.Integer, default=0)
+    total_dms = db.Column(db.Integer, default=0)
+    total_mentions = db.Column(db.Integer, default=0)
+    
+    # Response metrics
+    messages_responded = db.Column(db.Integer, default=0)
+    avg_response_time_minutes = db.Column(db.Float, default=0.0)
+    response_rate = db.Column(db.Float, default=0.0)
+    
+    # Sentiment metrics
+    positive_messages = db.Column(db.Integer, default=0)
+    negative_messages = db.Column(db.Integer, default=0)
+    neutral_messages = db.Column(db.Integer, default=0)
+    
+    # AI assistance metrics
+    ai_suggestions_used = db.Column(db.Integer, default=0)
+    ai_accuracy_score = db.Column(db.Float, default=0.0)
+    
+    # Customer satisfaction
+    resolved_issues = db.Column(db.Integer, default=0)
+    escalated_issues = db.Column(db.Integer, default=0)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='response_metrics')
+    
+    def __repr__(self):
+        return f'<ResponseMetrics {self.date} - Client {self.client_id}>'
+
+
+class CustomerProfile(db.Model):
+    """Enhanced customer profiles from social interactions"""
+    __tablename__ = 'customer_profiles'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # Social identities
+    instagram_username = db.Column(db.String(100), index=True)
+    snapchat_username = db.Column(db.String(100), index=True)
+    
+    # Profile info
+    display_name = db.Column(db.String(200))
+    profile_pic = db.Column(db.String(500))
+    is_verified = db.Column(db.Boolean, default=False)
+    
+    # Interaction history
+    first_interaction = db.Column(db.DateTime)
+    last_interaction = db.Column(db.DateTime)
+    total_interactions = db.Column(db.Integer, default=0)
+    
+    # Engagement metrics
+    total_comments = db.Column(db.Integer, default=0)
+    total_dms = db.Column(db.Integer, default=0)
+    total_mentions = db.Column(db.Integer, default=0)
+    total_purchases = db.Column(db.Integer, default=0)
+    
+    # Sentiment analysis
+    avg_sentiment_score = db.Column(db.Float, default=0.0)
+    loyalty_score = db.Column(db.Float, default=0.0)  # 0-100
+    influence_score = db.Column(db.Float, default=0.0)  # Based on followers, engagement
+    
+    # Preferences
+    preferred_language = db.Column(db.String(10))
+    preferred_contact_time = db.Column(db.Time)
+    interests = db.Column(db.JSON)  # Inferred from interactions
+    
+    # Customer value
+    lifetime_value = db.Column(db.Float, default=0.0)
+    churn_risk_score = db.Column(db.Float, default=0.0)  # 0-100
+    
+    # Tags and notes
+    tags = db.Column(db.JSON)  # VIP, frequent_buyer, complainer, advocate
+    internal_notes = db.Column(db.Text)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='customer_profiles')
+    
+    def __repr__(self):
+        return f'<CustomerProfile {self.display_name or self.instagram_username}>'
+
+
+class EngagementAutomation(db.Model):
+    """Automation rules for customer engagement"""
+    __tablename__ = 'engagement_automations'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    
+    # Rule details
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    
+    # Trigger conditions
+    trigger_type = db.Column(db.String(50))  # keyword, sentiment, time, customer_tag
+    trigger_conditions = db.Column(db.JSON)
+    
+    # Actions
+    action_type = db.Column(db.String(50))  # auto_reply, tag_customer, notify_team, escalate
+    action_config = db.Column(db.JSON)
+    
+    # Scheduling
+    is_active = db.Column(db.Boolean, default=True)
+    active_days = db.Column(db.JSON)  # ['monday', 'tuesday', ...]
+    active_hours_start = db.Column(db.Time)
+    active_hours_end = db.Column(db.Time)
+    
+    # Performance
+    trigger_count = db.Column(db.Integer, default=0)
+    success_count = db.Column(db.Integer, default=0)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    client = db.relationship('Client', back_populates='engagement_automations')
+    
+    def __repr__(self):
+        return f'<EngagementAutomation {self.name}>'

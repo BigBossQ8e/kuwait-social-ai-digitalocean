@@ -1,0 +1,33 @@
+"""
+Models initialization - fixed imports
+"""
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+# Import core models that actually exist
+from .core import (
+    User, Client, SocialAccount, Owner, Admin,
+    Post, PostAnalytics, Analytics,
+    AuditLog, Feature, PlatformSettings,
+    ContentTemplate, SupportTicket
+)
+
+# Import API key model
+from .api_key import APIKey, APIKeyUsage
+
+# Import client error model  
+from .client_error import ClientError
+
+# Import missing models separately
+from .missing_models import Notification, Subscription, Payment, Invoice
+
+__all__ = [
+    'db',
+    'User', 'Client', 'SocialAccount', 'Owner', 'Admin',
+    'Post', 'PostAnalytics', 'Analytics',
+    'AuditLog', 'Feature', 'PlatformSettings',
+    'ContentTemplate', 'SupportTicket',
+    'APIKey', 'APIKeyUsage', 'ClientError',
+    'Notification', 'Subscription', 'Payment', 'Invoice'
+]

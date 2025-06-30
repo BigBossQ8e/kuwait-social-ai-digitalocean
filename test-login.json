@@ -1,0 +1,5 @@
+{
+  "email": "admin@kwtsocial.com",
+  "password": "Admin123\!"
+}
+EOF < /dev/null

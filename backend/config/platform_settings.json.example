@@ -1,0 +1,81 @@
+{
+  "platform_limits": {
+    "instagram": {
+      "caption_max_length": 2200,
+      "hashtag_max_count": 30,
+      "bio_max_length": 150,
+      "story_duration": 15,
+      "reel_max_duration": 90,
+      "carousel_max_items": 10,
+      "username_max_length": 30,
+      "formats": {
+        "square": {"width": 1080, "height": 1080},
+        "portrait": {"width": 1080, "height": 1350},
+        "landscape": {"width": 1080, "height": 566},
+        "story": {"width": 1080, "height": 1920}
+      }
+    },
+    "snapchat": {
+      "caption_max_length": 250,
+      "hashtag_max_count": 100,
+      "story_duration": 10,
+      "snap_duration": 10,
+      "formats": {
+        "story": {"width": 1080, "height": 1920},
+        "ad": {"width": 1080, "height": 1920}
+      }
+    }
+  },
+  "kuwait_settings": {
+    "timezone": "Asia/Kuwait",
+    "business_days": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+    "weekend_days": ["Friday", "Saturday"],
+    "business_hours": {
+      "start": "08:00",
+      "end": "17:00",
+      "break_start": "12:00",
+      "break_end": "13:00"
+    },
+    "prayer_times": {
+      "fajr": {"start": "04:30", "end": "05:30"},
+      "sunrise": {"start": "05:45", "end": "06:15"},
+      "dhuhr": {"start": "11:45", "end": "12:30"},
+      "asr": {"start": "15:00", "end": "15:45"},
+      "maghrib": {"start": "17:30", "end": "18:15"},
+      "isha": {"start": "19:00", "end": "19:45"}
+    },
+    "ramadan_mode": false,
+    "friday_prayer": {
+      "start": "11:30",
+      "end": "13:00"
+    }
+  },
+  "moderation_settings": {
+    "inappropriate_terms": [
+      "alcohol", "beer", "wine", "vodka", "whiskey",
+      "pork", "bacon", "ham",
+      "gambling", "casino", "betting", "lottery",
+      "dating", "hookup",
+      "nude", "naked", "nsfw"
+    ],
+    "positive_terms": [
+      "halal", "family", "traditional", "quality",
+      "authentic", "fresh", "healthy", "blessed",
+      "kuwait", "kuwaiti", "ramadan", "eid"
+    ],
+    "cultural_guidelines": {
+      "respect_prayer_times": true,
+      "include_arabic": true,
+      "family_friendly": true,
+      "gender_appropriate": true
+    }
+  },
+  "trending_hashtags": {
+    "general": ["#Kuwait", "#الكويت", "#Q8", "#KuwaitCity"],
+    "food": ["#KuwaitFood", "#مطاعم_الكويت", "#KuwaitRestaurants"],
+    "shopping": ["#KuwaitShopping", "#تسوق_الكويت", "#KuwaitMalls"],
+    "events": ["#KuwaitEvents", "#فعاليات_الكويت"],
+    "ramadan": ["#RamadanKuwait", "#رمضان_الكويت", "#رمضان_كريم"],
+    "national": ["#KuwaitNationalDay", "#العيد_الوطني_الكويتي"]
+  }
+}

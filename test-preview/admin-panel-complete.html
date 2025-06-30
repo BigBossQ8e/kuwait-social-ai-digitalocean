@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Complete Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --white: #ffffff;
+            --gray: #95a5a6;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .notification-badge .count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--secondary);
+            width: 260px;
+            min-height: calc(100vh - 60px);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+        
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        
+        .sidebar-section {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-section-title {
+            color: var(--gray);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar.collapsed .sidebar-section-title {
+            display: none;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            position: relative;
+        }
+        
+        .sidebar a {
+            color: #ecf0f1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            transition: background 0.3s;
+        }
+        
+        .sidebar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .sidebar a.active {
+            background-color: var(--info);
+        }
+        
+        .sidebar .icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar.collapsed a span:not(.icon) {
+            display: none;
+        }
+        
+        .sidebar .badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 60px;
+            padding: 2rem;
+            transition: margin-left 0.3s;
+        }
+        
+        .main-content.expanded {
+            margin-left: 60px;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--info);
+            transition: transform 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .metric-card.success { border-left-color: var(--success); }
+        .metric-card.warning { border-left-color: var(--warning); }
+        .metric-card.danger { border-left-color: var(--danger); }
+        
+        .metric-card h3 {
+            font-size: 0.875rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .metric-card .change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .metric-card .change.positive { color: var(--success); }
+        .metric-card .change.negative { color: var(--danger); }
+        
+        /* Section Container */
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section h2 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+        }
+        
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.875rem;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #d1ecf1; color: #0c5460; }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary { background: var(--info); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-secondary { background: var(--gray); color: white; }
+        
+        .btn:hover { opacity: 0.9; }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--info);
+        }
+        
+        select.form-control {
+            cursor: pointer;
+        }
+        
+        /* Charts Container */
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--info);
+            color: var(--info);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Alert Boxes */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-info { background: #d1ecf1; color: #0c5460; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+        .alert-danger { background: #f8d7da; color: #721c24; }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Progress Bars */
+        .progress {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--info);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+        }
+        
+        /* System Health Grid */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .health-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .health-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .health-indicator.healthy { background: var(--success); }
+        .health-indicator.warning { background: var(--warning); }
+        .health-indicator.error { background: var(--danger); }
+        
+        /* Quick Actions */
+        .quick-actions {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+        }
+        
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--info);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <button class="btn btn-sm" onclick="toggleSidebar()" style="background: transparent; color: white;">☰</button>
+            <h1>Kuwait Social AI - Admin Panel</h1>
+        </div>
+        <div class="header-actions">
+            <div class="notification-badge" onclick="showNotifications()">
+                <span style="font-size: 1.5rem;">🔔</span>
+                <span class="count">5</span>
+            </div>
+            <span>Admin User</span>
+            <button class="btn btn-sm btn-danger" onclick="logout()">Logout</button>
+        </div>
+    </header>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Main Navigation -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Main</div>
+            <ul>
+                <li><a href="#dashboard" class="active" onclick="showSection('dashboard')">
+                    <span class="icon">📊</span>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#users" onclick="showSection('users')">
+                    <span class="icon">👥</span>
+                    <span>User Management</span>
+                    <span class="badge">127</span>
+                </a></li>
+                <li><a href="#analytics" onclick="showSection('analytics')">
+                    <span class="icon">📈</span>
+                    <span>Analytics</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- System -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">System</div>
+            <ul>
+                <li><a href="#performance" onclick="showSection('performance')">
+                    <span class="icon">⚡</span>
+                    <span>Performance</span>
+                </a></li>
+                <li><a href="#monitoring" onclick="showSection('monitoring')">
+                    <span class="icon">🔍</span>
+                    <span>Monitoring</span>
+                </a></li>
+                <li><a href="#health" onclick="showSection('health')">
+                    <span class="icon">💚</span>
+                    <span>System Health</span>
+                </a></li>
+                <li><a href="#errors" onclick="showSection('errors')">
+                    <span class="icon">⚠️</span>
+                    <span>Error Tracking</span>
+                    <span class="badge">3</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Financial -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Financial</div>
+            <ul>
+                <li><a href="#subscriptions" onclick="showSection('subscriptions')">
+                    <span class="icon">💳</span>
+                    <span>Subscriptions</span>
+                </a></li>
+                <li><a href="#payments" onclick="showSection('payments')">
+                    <span class="icon">💰</span>
+                    <span>Payments</span>
+                </a></li>
+                <li><a href="#invoices" onclick="showSection('invoices')">
+                    <span class="icon">📄</span>
+                    <span>Invoices</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Content -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Content</div>
+            <ul>
+                <li><a href="#posts" onclick="showSection('posts')">
+                    <span class="icon">📝</span>
+                    <span>All Posts</span>
+                </a></li>
+                <li><a href="#ai-usage" onclick="showSection('ai-usage')">
+                    <span class="icon">🤖</span>
+                    <span>AI Usage</span>
+                </a></li>
+                <li><a href="#competitors" onclick="showSection('competitors')">
+                    <span class="icon">🏢</span>
+                    <span>Competitors</span>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- Settings -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Settings</div>
+            <ul>
+                <li><a href="#platform" onclick="showSection('platform')">
+                    <span class="icon">⚙️</span>
+                    <span>Platform Settings</span>
+                </a></li>
+                <li><a href="#features" onclick="showSection('features')">
+                    <span class="icon">🎯</span>
+                    <span>Feature Flags</span>
+                </a></li>
+                <li><a href="#audit" onclick="showSection('audit')">
+                    <span class="icon">📋</span>
+                    <span>Audit Logs</span>
+                </a></li>
+            </ul>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content" id="main-content">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <h2>Dashboard Overview</h2>
+            
+            <!-- Key Metrics -->
+            <div class="dashboard-grid">
+                <div class="metric-card success">
+                    <h3>Total Revenue (Monthly)</h3>
+                    <div class="value">KWD 4,580</div>
+                    <div class="change positive">↑ 12% vs last month</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Active Clients</h3>
+                    <div class="value">115</div>
+                    <div class="change positive">↑ 8 new this month</div>
+                </div>
+                <div class="metric-card warning">
+                    <h3>Posts Created</h3>
+                    <div class="value">2,847</div>
+                    <div class="change positive">↑ 234 today</div>
+                </div>
+                <div class="metric-card">
+                    <h3>API Calls Today</h3>
+                    <div class="value">45.2K</div>
+                    <div class="change negative">↓ 5% vs yesterday</div>
+                </div>
+            </div>
+            
+            <!-- Real-time Activity -->
+            <div class="section">
+                <h2>Real-time Activity</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2 min ago</td>
+                                <td>Al-Babtain Electronics</td>
+                                <td>Created Instagram post</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>5 min ago</td>
+                                <td>Kuwait Fashion House</td>
+                                <td>Generated AI content</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>12 min ago</td>
+                                <td>Q8 Restaurant</td>
+                                <td>Failed payment attempt</td>
+                                <td><span class="badge badge-danger">Failed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="section">
+                <h2>Revenue Trends</h2>
+                <div class="chart-container">
+                    <p>Revenue Chart Placeholder - Connect to Chart.js</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Management Section -->
+        <div id="users" class="content-section" style="display: none;">
+            <div class="section-header">
+                <h2>User Management</h2>
+                <button class="btn btn-primary" onclick="showModal('addUser')">+ Add New User</button>
+            </div>
+            
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Role:</label>
+                    <select class="form-control">
+                        <option>All Roles</option>
+                        <option>Client</option>
+                        <option>Admin</option>
+                        <option>Owner</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select class="form-control">
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Trial</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Plan:</label>
+                    <select class="form-control">
+                        <option>All Plans</option>
+                        <option>Basic</option>
+                        <option>Professional</option>
+                        <option>Enterprise</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <input type="text" class="form-control" placeholder="Search users...">
+                </div>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="section">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Plan</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#101</td>
+                                <td>Al-Babtain Electronics</td>
+                                <td>Ahmed Al-Babtain</td>
+                                <td>ahmed@babtain.kw</td>
+                                <td>+965 9876 5432</td>
+                                <td><span class="badge badge-info">Professional</span></td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>15 Jan 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary">Edit</button>
+                                        <button class="btn btn-sm btn-warning">Suspend</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#102</td>
+                                <td>Kuwait Fashion House</td>
+                                <td>Sara Al-Mutairi</td>
+                                <td>sara@kfh.com.kw</td>
+                                <td>+965 9123 4567</td>
+                                <td><span class="badge badge-warning">Enterprise</span></td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>22 Jan 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary">Edit</button>
+                                        <button class="btn btn-sm btn-warning">Suspend</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#103</td>
+                                <td>Q8 Restaurant Group</td>
+                                <td>Mohammad Al-Rashidi</td>
+                                <td>info@q8restaurants.kw</td>
+                                <td>+965 9555 1234</td>
+                                <td><span class="badge badge-success">Basic</span></td>
+                                <td><span class="badge badge-warning">Trial</span></td>
+                                <td>5 Feb 2025</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-primary">Edit</button>
+                                        <button class="btn btn-sm btn-success">Upgrade</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Section -->
+        <div id="performance" class="content-section" style="display: none;">
+            <h2>Performance Monitoring</h2>
+            
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('database')">Database</div>
+                <div class="tab" onclick="showTab('api')">API Performance</div>
+                <div class="tab" onclick="showTab('queries')">Slow Queries</div>
+                <div class="tab" onclick="showTab('cache')">Cache Stats</div>
+            </div>
+            
+            <!-- Database Tab -->
+            <div id="database-tab" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <h3>Database Size</h3>
+                        <div class="value">2.4 GB</div>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 24%">24%</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Active Connections</h3>
+                        <div class="value">45 / 100</div>
+                        <div class="change positive">Healthy</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <h3>Query Time (avg)</h3>
+                        <div class="value">125ms</div>
+                        <div class="change negative">↑ 15ms</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Cache Hit Rate</h3>
+                        <div class="value">87%</div>
+                        <div class="change positive">Good</div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>Database Tables</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Table Name</th>
+                                <th>Rows</th>
+                                <th>Size</th>
+                                <th>Indexes</th>
+                                <th>Last Vacuum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>users</td>
+                                <td>127</td>
+                                <td>2.1 MB</td>
+                                <td>5</td>
+                                <td>2 days ago</td>
+                            </tr>
+                            <tr>
+                                <td>posts</td>
+                                <td>45,892</td>
+                                <td>892 MB</td>
+                                <td>8</td>
+                                <td>1 day ago</td>
+                            </tr>
+                            <tr>
+                                <td>analytics</td>
+                                <td>1,234,567</td>
+                                <td>1.2 GB</td>
+                                <td>12</td>
+                                <td>6 hours ago</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Health Section -->
+        <div id="health" class="content-section" style="display: none;">
+            <h2>System Health Monitor</h2>
+            
+            <div class="health-grid">
+                <div class="health-item">
+                    <div class="health-indicator healthy">✓</div>
+                    <h4>Database</h4>
+                    <p>Healthy</p>
+                    <small>Response: 45ms</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator healthy">✓</div>
+                    <h4>API Server</h4>
+                    <p>Running</p>
+                    <small>Uptime: 99.9%</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator warning">!</div>
+                    <h4>Redis Cache</h4>
+                    <p>High Memory</p>
+                    <small>Using 85%</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator healthy">✓</div>
+                    <h4>File Storage</h4>
+                    <p>Optimal</p>
+                    <small>23% Used</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator error">✗</div>
+                    <h4>Email Service</h4>
+                    <p>Error</p>
+                    <small>Connection failed</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator healthy">✓</div>
+                    <h4>OpenAI API</h4>
+                    <p>Connected</p>
+                    <small>Quota: 67%</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator healthy">✓</div>
+                    <h4>Instagram API</h4>
+                    <p>Active</p>
+                    <small>Rate: OK</small>
+                </div>
+                <div class="health-item">
+                    <div class="health-indicator warning">!</div>
+                    <h4>Telegram Bot</h4>
+                    <p>Slow</p>
+                    <small>Delay: 2s</small>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>System Resources</h3>
+                <div style="display: grid; gap: 1rem;">
+                    <div>
+                        <strong>CPU Usage</strong>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 35%; background: var(--success)">35%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Memory Usage</strong>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 62%; background: var(--warning)">62%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Disk I/O</strong>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 28%; background: var(--success)">28%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Network Bandwidth</strong>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 45%; background: var(--info)">45%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error Tracking Section -->
+        <div id="errors" class="content-section" style="display: none;">
+            <h2>Error Tracking</h2>
+            
+            <div class="alert alert-danger">
+                <strong>Critical Error:</strong> Email service connection failed - 3 occurrences in last hour
+            </div>
+            
+            <div class="section">
+                <h3>Recent Errors</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Level</th>
+                            <th>Error Message</th>
+                            <th>User</th>
+                            <th>Endpoint</th>
+                            <th>Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10:45 AM</td>
+                            <td><span class="badge badge-danger">Critical</span></td>
+                            <td>SMTP connection timeout</td>
+                            <td>System</td>
+                            <td>/api/email/send</td>
+                            <td>3</td>
+                            <td><button class="btn btn-sm btn-primary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>09:30 AM</td>
+                            <td><span class="badge badge-warning">Warning</span></td>
+                            <td>Rate limit exceeded</td>
+                            <td>client@demo.com</td>
+                            <td>/api/ai/generate</td>
+                            <td>1</td>
+                            <td><button class="btn btn-sm btn-primary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td>08:15 AM</td>
+                            <td><span class="badge badge-info">Info</span></td>
+                            <td>Invalid image format</td>
+                            <td>fashion@kw.com</td>
+                            <td>/api/posts/upload</td>
+                            <td>2</td>
+                            <td><button class="btn btn-sm btn-primary">View Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Subscriptions Section -->
+        <div id="subscriptions" class="content-section" style="display: none;">
+            <h2>Subscription Management</h2>
+            
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <h3>Active Subscriptions</h3>
+                    <div class="value">115</div>
+                    <div class="change positive">↑ 5 this week</div>
+                </div>
+                <div class="metric-card success">
+                    <h3>Monthly Recurring Revenue</h3>
+                    <div class="value">KWD 4,580</div>
+                    <div class="change positive">↑ 12%</div>
+                </div>
+                <div class="metric-card warning">
+                    <h3>Trials Ending Soon</h3>
+                    <div class="value">8</div>
+                    <div class="change">Next 7 days</div>
+                </div>
+                <div class="metric-card danger">
+                    <h3>Failed Payments</h3>
+                    <div class="value">3</div>
+                    <div class="change">Requires action</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Subscription Plans Distribution</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <h4>Basic</h4>
+                        <div style="font-size: 2rem; color: var(--info);">45</div>
+                        <small>KWD 29/month</small>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <h4>Professional</h4>
+                        <div style="font-size: 2rem; color: var(--success);">52</div>
+                        <small>KWD 49/month</small>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                        <h4>Enterprise</h4>
+                        <div style="font-size: 2rem; color: var(--warning);">18</div>
+                        <small>KWD 99/month</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Usage Section -->
+        <div id="ai-usage" class="content-section" style="display: none;">
+            <h2>AI Usage Statistics</h2>
+            
+            <div class="dashboard-grid">
+                <div class="metric-card">
+                    <h3>Total AI Requests</h3>
+                    <div class="value">12,456</div>
+                    <div class="change">This month</div>
+                </div>
+                <div class="metric-card warning">
+                    <h3>OpenAI API Cost</h3>
+                    <div class="value">$234.56</div>
+                    <div class="change negative">↑ 18% vs budget</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Avg Response Time</h3>
+                    <div class="value">2.3s</div>
+                    <div class="change positive">↓ 0.5s</div>
+                </div>
+                <div class="metric-card success">
+                    <h3>Success Rate</h3>
+                    <div class="value">98.5%</div>
+                    <div class="change positive">Excellent</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>AI Usage by Feature</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Requests</th>
+                            <th>Success Rate</th>
+                            <th>Avg Tokens</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Content Generation</td>
+                            <td>8,234</td>
+                            <td>99.1%</td>
+                            <td>450</td>
+                            <td>$156.23</td>
+                        </tr>
+                        <tr>
+                            <td>Hashtag Suggestions</td>
+                            <td>2,156</td>
+                            <td>98.7%</td>
+                            <td>120</td>
+                            <td>$34.89</td>
+                        </tr>
+                        <tr>
+                            <td>Content Enhancement</td>
+                            <td>1,567</td>
+                            <td>97.2%</td>
+                            <td>280</td>
+                            <td>$28.45</td>
+                        </tr>
+                        <tr>
+                            <td>Translation</td>
+                            <td>499</td>
+                            <td>99.8%</td>
+                            <td>350</td>
+                            <td>$14.99</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Audit Logs Section -->
+        <div id="audit" class="content-section" style="display: none;">
+            <h2>Audit Logs</h2>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label>User:</label>
+                    <input type="text" class="form-control" placeholder="Filter by user...">
+                </div>
+                <div class="filter-group">
+                    <label>Action:</label>
+                    <select class="form-control">
+                        <option>All Actions</option>
+                        <option>Login</option>
+                        <option>Create</option>
+                        <option>Update</option>
+                        <option>Delete</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date Range:</label>
+                    <input type="date" class="form-control">
+                </div>
+            </div>
+            
+            <div class="section">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>IP Address</th>
+                            <th>Action</th>
+                            <th>Resource</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-06-27 10:45:23</td>
+                            <td>admin@demo.com</td>
+                            <td>192.168.1.100</td>
+                            <td>UPDATE</td>
+                            <td>User #102</td>
+                            <td>Changed subscription from Basic to Professional</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-27 10:30:15</td>
+                            <td>owner@demo.com</td>
+                            <td>192.168.1.1</td>
+                            <td>DELETE</td>
+                            <td>Post #4567</td>
+                            <td>Removed inappropriate content</td>
+                        </tr>
+                        <tr>
+                            <td>2025-06-27 09:15:45</td>
+                            <td>system</td>
+                            <td>localhost</td>
+                            <td>CREATE</td>
+                            <td>Backup</td>
+                            <td>Daily automated backup completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Quick Action Button -->
+    <div class="quick-actions">
+        <div class="fab" onclick="showQuickActions()">+</div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Modal Title</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modal-body">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+        
+        // Show Section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // Update active menu
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('a').classList.add('active');
+        }
+        
+        // Show Tab
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId + '-tab').classList.add('active');
+            
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Show Modal
+        function showModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            switch(type) {
+                case 'addUser':
+                    title.textContent = 'Add New User';
+                    body.innerHTML = `
+                        <form>
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" class="form-control" placeholder="Enter company name">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Person</label>
+                                <input type="text" class="form-control" placeholder="Enter contact name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" placeholder="Enter email">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" class="form-control" placeholder="+965 XXXX XXXX">
+                            </div>
+                            <div class="form-group">
+                                <label>Subscription Plan</label>
+                                <select class="form-control">
+                                    <option>Basic - KWD 29/month</option>
+                                    <option>Professional - KWD 49/month</option>
+                                    <option>Enterprise - KWD 99/month</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        </form>
+                    `;
+                    break;
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        // Close Modal
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+        
+        // Show Notifications
+        function showNotifications() {
+            alert('Notifications:\n\n1. 3 new user registrations\n2. 1 payment failed\n3. System update available');
+        }
+        
+        // Show Quick Actions
+        function showQuickActions() {
+            alert('Quick Actions:\n\n• Create User\n• Send Announcement\n• Export Report\n• System Backup');
+        }
+        
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'login-page.html?logout=true';
+            }
+        }
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update random metric
+            const metrics = document.querySelectorAll('.metric-card .value');
+            if (metrics.length > 0) {
+                const randomMetric = metrics[Math.floor(Math.random() * metrics.length)];
+                const currentValue = parseFloat(randomMetric.textContent.replace(/[^0-9.-]/g, ''));
+                const change = (Math.random() - 0.5) * 10;
+                randomMetric.textContent = randomMetric.textContent.replace(currentValue, (currentValue + change).toFixed(0));
+            }
+        }, 5000);
+        
+        // Handle modal close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Mobile sidebar toggle
+        if (window.innerWidth < 768) {
+            document.getElementById('sidebar').classList.add('collapsed');
+            document.getElementById('main-content').classList.add('expanded');
+        }
+    </script>
+</body>
+</html>

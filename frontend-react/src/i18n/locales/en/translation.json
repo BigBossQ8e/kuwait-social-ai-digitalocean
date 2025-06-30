@@ -1,0 +1,213 @@
+{
+  "common": {
+    "appName": "Kuwait Social AI",
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "navigation": {
+    "home": "Home",
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "clientLogin": "Client Login",
+    "adminLogin": "Admin Login",
+    "support": "Support"
+  },
+  "landing": {
+    "hero": {
+      "title": "AI-Powered Social Media for Kuwait F&B 🍽️",
+      "subtitle": "Create mouth-watering content for restaurants & cafes in Arabic & English instantly",
+      "cta": {
+        "primary": "Get Started",
+        "secondary": "Learn More"
+      }
+    },
+    "features": {
+      "title": "Built for Kuwait's Food & Beverage Industry",
+      "items": {
+        "specialist": {
+          "title": "F&B Content Specialist",
+          "description": "AI trained specifically for restaurants, cafes, and food businesses in Kuwait"
+        },
+        "photography": {
+          "title": "Food Photography Captions",
+          "description": "Upload your dish photos and get appetizing descriptions in Arabic & English"
+        },
+        "holidays": {
+          "title": "Ramadan & Holiday Specials",
+          "description": "Pre-made templates for Iftar, Suhoor, and Kuwait holiday promotions"
+        },
+        "promotions": {
+          "title": "Menu Promotions",
+          "description": "Create daily specials, new item launches, and limited-time offers that convert"
+        },
+        "reviews": {
+          "title": "Review Response AI",
+          "description": "Professional responses to customer reviews in both languages"
+        },
+        "insights": {
+          "title": "Peak Hours Insights",
+          "description": "Post when hungry customers are browsing - lunch, dinner, and late-night times"
+        }
+      }
+    },
+    "pricing": {
+      "title": "Simple, Transparent Pricing",
+      "currency": "KWD",
+      "per_month": "/mo",
+      "plans": {
+        "basic": {
+          "name": "Basic",
+          "features": [
+            "50 AI-generated posts",
+            "Basic templates",
+            "Email support",
+            "Instagram integration"
+          ]
+        },
+        "professional": {
+          "name": "Professional",
+          "badge": "Most Popular",
+          "features": [
+            "100 AI-generated posts",
+            "Advanced templates",
+            "Image enhancement",
+            "Priority support",
+            "Analytics dashboard"
+          ]
+        },
+        "premium": {
+          "name": "Premium",
+          "features": [
+            "500 AI-generated posts",
+            "Custom templates",
+            "Team collaboration",
+            "API access",
+            "Dedicated support"
+          ]
+        }
+      },
+      "cta": "Get Started"
+    },
+    "footer": {
+      "copyright": "© 2024 Kuwait Social AI. Made with ❤️ in Kuwait",
+      "links": {
+        "signup": "Sign Up",
+        "login": "Client Login",
+        "admin": "Admin",
+        "support": "Support"
+      }
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Login to your account",
+      "adminSubtitle": "Admin Login",
+      "email": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password?",
+      "submit": "Login",
+      "submitting": "Signing In...",
+      "noAccount": "Don't have an account?",
+      "signupLink": "Sign up here",
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "accountSuspended": "Your account has been suspended",
+        "serverError": "Server error. Please try again later",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Please enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordTooShort": "Password must be at least 8 characters"
+      }
+    },
+    "signup": {
+      "title": "Create Your Account",
+      "subtitle": "Join Kuwait's leading F&B social media platform",
+      "selectPlan": "Select Your Plan",
+      "businessInfo": "Business Information",
+      "companyName": "Restaurant/Company Name",
+      "companyNamePlaceholder": "e.g., Kuwait Coffee House",
+      "contactName": "Your Full Name",
+      "contactNamePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Kuwait Phone Number",
+      "phonePlaceholder": "+965 XXXX XXXX",
+      "password": "Password",
+      "passwordHint": "(8+ chars, uppercase, lowercase, number, special char)",
+      "confirmPassword": "Confirm Password",
+      "terms": "By signing up, you agree to our",
+      "termsLink": "Terms of Service",
+      "and": "and",
+      "privacyLink": "Privacy Policy",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Login here",
+      "submit": "Sign Up for {{plan}} Plan",
+      "submitting": "Creating Account...",
+      "success": "Registration successful! Your account is pending approval. You selected the {{plan}} plan. We will contact you soon.",
+      "errors": {
+        "allFieldsRequired": "All fields are required",
+        "invalidEmail": "Invalid email format",
+        "emailExists": "Email already registered",
+        "weakPassword": "Password must be at least 8 characters",
+        "passwordRequirements": {
+          "uppercase": "Password must contain at least one uppercase letter",
+          "lowercase": "Password must contain at least one lowercase letter",
+          "number": "Password must contain at least one number",
+          "special": "Password must contain at least one special character"
+        },
+        "passwordMismatch": "Passwords do not match",
+        "invalidPhone": "Invalid Kuwait phone number. Format: +965XXXXXXXX",
+        "serverError": "Registration failed. Please try again."
+      }
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}",
+    "overview": "Overview",
+    "stats": {
+      "totalPosts": "Total Posts",
+      "scheduledPosts": "Scheduled Posts",
+      "publishedToday": "Published Today",
+      "engagement": "Engagement Rate"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "newPost": "Create New Post",
+      "schedule": "Schedule Posts",
+      "analytics": "View Analytics",
+      "settings": "Settings"
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "pendingApprovals": "Pending Approvals",
+    "totalClients": "Total Clients",
+    "activeClients": "Active Clients",
+    "systemHealth": "System Health",
+    "newSignups": "New Signups",
+    "approve": "Approve",
+    "reject": "Reject",
+    "giftTrial": "Gift Trial Days",
+    "viewDetails": "View Details"
+  }
+}

@@ -1,0 +1,31 @@
+# Kuwait Social AI - Droplet Deployment Commands
+# Copy and paste these commands after connecting to your droplet
+
+# 1. First, update the system
+apt update && apt upgrade -y
+
+# 2. Install required tools
+apt install -y curl git unzip
+
+# 3. Create application directory
+mkdir -p /root/kuwait-social-ai
+
+# 4. Install Docker and Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# 5. After uploading files via SFTP, run:
+cd /root/kuwait-social-ai
+chmod +x deploy.sh
+./deploy.sh
+
+# 6. Initialize database
+docker-compose exec backend flask db upgrade
+
+# 7. Check services
+docker-compose ps
+
+# 8. View logs if needed
+docker-compose logs -f

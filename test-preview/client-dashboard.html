@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Client Dashboard Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #1976d2;
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .nav {
+            background-color: #fff;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav li {
+            padding: 1rem 0;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #1976d2;
+        }
+        
+        .nav a.active {
+            color: #1976d2;
+            border-bottom: 2px solid #1976d2;
+            padding-bottom: 0.8rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1976d2;
+        }
+        
+        .stat-card .change {
+            font-size: 0.875rem;
+            color: #4caf50;
+            margin-top: 0.5rem;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-btn {
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+        
+        .action-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .recent-posts {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .post-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .post-details h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .post-details p {
+            font-size: 0.75rem;
+            color: #666;
+        }
+        
+        .api-test {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .api-test button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .api-test button:hover {
+            background: #1565c0;
+        }
+        
+        #api-response {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .arabic-support {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Noto Kufi Arabic', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Kuwait Social AI - Client Dashboard</h1>
+    </header>
+    
+    <nav class="nav">
+        <ul>
+            <li><a href="#" class="active">Dashboard</a></li>
+            <li><a href="#">Posts</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Competitors</a></li>
+            <li><a href="#">Social Accounts</a></li>
+            <li><a href="#">AI Content</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Posts</h3>
+                <div class="value">247</div>
+                <div class="change">+12% this month</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Reach</h3>
+                <div class="value">45.2K</div>
+                <div class="change">+28% this month</div>
+            </div>
+            <div class="stat-card">
+                <h3>Engagement Rate</h3>
+                <div class="value">4.8%</div>
+                <div class="change">+0.5% this month</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active Platforms</h3>
+                <div class="value">3</div>
+                <div class="change">Instagram, Snapchat, TikTok</div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <section class="section">
+            <h2>Quick Actions</h2>
+            <div class="quick-actions">
+                <div class="action-btn" onclick="alert('Create Post feature coming soon!')">
+                    <i>📝</i>
+                    <div>Create Post</div>
+                </div>
+                <div class="action-btn" onclick="alert('AI Content Generator coming soon!')">
+                    <i>🤖</i>
+                    <div>Generate Content</div>
+                </div>
+                <div class="action-btn" onclick="alert('Schedule Post feature coming soon!')">
+                    <i>📅</i>
+                    <div>Schedule Post</div>
+                </div>
+                <div class="action-btn" onclick="alert('View Analytics feature coming soon!')">
+                    <i>📊</i>
+                    <div>View Analytics</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Recent Posts -->
+        <section class="section">
+            <h2>Recent Posts</h2>
+            <div class="recent-posts">
+                <div class="post-item">
+                    <img src="https://via.placeholder.com/60" alt="Post thumbnail">
+                    <div class="post-details">
+                        <h4>Ramadan Special Offer 🌙</h4>
+                        <p>Instagram • Posted 2 hours ago • 1.2K likes</p>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <img src="https://via.placeholder.com/60" alt="Post thumbnail">
+                    <div class="post-details">
+                        <h4>New Product Launch 🚀</h4>
+                        <p>Snapchat • Posted 5 hours ago • 856 views</p>
+                    </div>
+                </div>
+                <div class="post-item">
+                    <img src="https://via.placeholder.com/60" alt="Post thumbnail">
+                    <div class="post-details arabic-support">
+                        <h4>عرض خاص لليوم الوطني 🇰🇼</h4>
+                        <p>TikTok • منذ 8 ساعات • 2.3K مشاهدة</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- API Test Section -->
+        <section class="section">
+            <h2>Backend API Test</h2>
+            <div class="api-test">
+                <p>Test API endpoints (requires backend at https://kwtsocial.com/api):</p>
+                <button onclick="testAPI('/api/health')">Test Health</button>
+                <button onclick="testAPI('/api/auth/login')">Test Login</button>
+                <button onclick="testAPI('/api/client/dashboard')">Test Dashboard</button>
+                <button onclick="testAPI('/api/analytics/overview')">Test Analytics</button>
+                <button onclick="testAPI('/api/social/accounts')">Test Social Accounts</button>
+                <div id="api-response"></div>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // API Test Function
+        async function testAPI(endpoint) {
+            const responseDiv = document.getElementById('api-response');
+            responseDiv.innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(`https://kwtsocial.com${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add auth token if available
+                        // 'Authorization': 'Bearer YOUR_TOKEN_HERE'
+                    }
+                });
+                
+                const data = await response.json();
+                responseDiv.innerHTML = `Endpoint: ${endpoint}\nStatus: ${response.status}\nResponse:\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                responseDiv.innerHTML = `Endpoint: ${endpoint}\nError: ${error.message}`;
+            }
+        }
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            const statsValues = document.querySelectorAll('.stat-card .value');
+            statsValues[1].textContent = (45.2 + Math.random() * 0.5).toFixed(1) + 'K';
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+{
+  "fb_content_templates": {
+    "daily_special": {
+      "templates": [
+        "Today's Chef Special: {dish_name} - {description}\n\nOnly {quantity} portions available! 🔥\n\n📍 Visit us today\n💰 {price} KWD",
+        "🍽️ DAILY SPECIAL ALERT!\n\n{dish_name}\n{description}\n\nLimited time: {time_range}\nPrice: {price} KWD\n\nOrder now: {phone}",
+        "Fresh from our kitchen today! 👨‍🍳\n\n✨ {dish_name}\n📝 {description}\n💰 Special price: {price} KWD\n⏰ Available until {end_time}\n\n#DailySpecial #KuwaitFood"
+      ],
+      "required_fields": ["dish_name", "price"],
+      "optional_fields": ["description", "quantity", "time_range", "end_time"]
+    },
+    "new_menu": {
+      "templates": [
+        "🎉 NEW ON THE MENU! 🎉\n\nIntroducing {dish_name} - {description}\n\n🌟 {unique_selling_point}\n💰 {price} KWD\n\nBe among the first to try it!",
+        "We heard you! 👂\n\nBy popular demand, we're adding {dish_name} to our menu!\n\n{description}\n\nStarting {launch_date}\nPrice: {price} KWD",
+        "MENU UPDATE 📋\n\n{number} new {category} items now available!\n\nFeaturing:\n{item_list}\n\nWhich one will you try first? 🤔"
+      ],
+      "required_fields": ["dish_name", "price"],
+      "optional_fields": ["description", "unique_selling_point", "launch_date", "category", "item_list"]
+    },
+    "ramadan": {
+      "templates": [
+        "🌙 RAMADAN MUBARAK! 🌙\n\nSpecial Iftar Buffet\n{items}\n\n👨‍👩‍👧‍👦 Family Package: {family_price} KWD\n👤 Per Person: {individual_price} KWD\n\n📞 Reserve: {phone}",
+        "Break your fast with us! 🌅\n\n✨ Iftar Special Menu ✨\n{menu_items}\n\nIncludes: Dates, Laban, Soup & Dessert\nPrice: {price} KWD\n\nIftar time today: {iftar_time}",
+        "SUHOOR SPECIAL 🌃\n\nOpen until {closing_time} during Ramadan!\n\n{suhoor_items}\n\nPerfect for your pre-dawn meal\n\n#RamadanKuwait #Suhoor"
+      ],
+      "required_fields": ["price"],
+      "optional_fields": ["items", "family_price", "individual_price", "menu_items", "iftar_time", "closing_time", "suhoor_items"]
+    },
+    "review_response": {
+      "positive": [
+        "Thank you so much for your wonderful {rating}-star review, {customer_name}! 🌟 We're thrilled you enjoyed {specific_item}. Looking forward to serving you again soon!",
+        "Your kind words made our day! 😊 Thank you for choosing us. We're so happy you loved {experience}. See you soon!",
+        "شكراً جزيلاً على تقييمك الرائع! We truly appreciate your support and are delighted you had a great experience. 🙏"
+      ],
+      "negative": [
+        "Thank you for your feedback, {customer_name}. We sincerely apologize for {issue}. Please contact us at {phone} so we can make this right.",
+        "We're sorry to hear about your experience. This isn't the standard we aim for. We'd love to discuss this further - please reach out at {email}.",
+        "نعتذر عن تجربتك. Your feedback helps us improve. Please give us another chance to serve you better."
+      ],
+      "neutral": [
+        "Thank you for taking the time to review us! We appreciate your feedback about {topic}. How can we make your next visit a 5-star experience?",
+        "Thanks for your honest feedback! We're always looking to improve. Hope to see you again soon!",
+        "We appreciate your review! If there's anything specific we can do better, please let us know. 🙏"
+      ]
+    }
+  },
+  "kuwait_fb_hashtags": {
+    "general": ["#KuwaitFood", "#Q8Food", "#KuwaitRestaurants", "#مطاعم_الكويت", "#KuwaitFoodie", "#Q8Foodie"],
+    "breakfast": ["#KuwaitBreakfast", "#فطور_الكويت", "#BreakfastKuwait", "#Q8Breakfast"],
+    "lunch": ["#KuwaitLunch", "#LunchTimeKuwait", "#غداء_الكويت", "#BusinessLunchKuwait"],
+    "dinner": ["#KuwaitDinner", "#DinnerKuwait", "#عشاء_الكويت", "#Q8Dinner"],
+    "coffee": ["#KuwaitCoffee", "#قهوة_الكويت", "#CoffeeKuwait", "#Q8Coffee"],
+    "dessert": ["#KuwaitDesserts", "#حلويات_الكويت", "#SweetsKuwait", "#Q8Desserts"],
+    "delivery": ["#KuwaitDelivery", "#توصيل_الكويت", "#OrderNowKuwait", "#Q8Delivery"],
+    "ramadan": ["#RamadanKuwait", "#رمضان_الكويت", "#IftarKuwait", "#افطار_الكويت", "#SuhoorKuwait"],
+    "trending": ["#Talabat", "#Deliveroo", "#Carriage", "#Kuwait360", "#248am"]
+  },
+  "posting_times": {
+    "breakfast": {
+      "weekday": ["07:00", "07:30", "08:00"],
+      "weekend": ["08:30", "09:00", "09:30"]
+    },
+    "lunch": {
+      "weekday": ["11:30", "12:00", "12:30", "13:00"],
+      "weekend": ["12:30", "13:00", "13:30", "14:00"]
+    },
+    "afterwork": {
+      "weekday": ["17:00", "17:30", "18:00"],
+      "weekend": ["16:00", "16:30", "17:00"]
+    },
+    "dinner": {
+      "weekday": ["19:00", "19:30", "20:00"],
+      "weekend": ["19:30", "20:00", "20:30", "21:00"]
+    },
+    "latenight": {
+      "all_days": ["21:30", "22:00", "22:30", "23:00"]
+    }
+  },
+  "content_guidelines": {
+    "do": [
+      "Show fresh, appetizing food photos",
+      "Include prices in KWD",
+      "Mention halal when applicable",
+      "Use both English and Arabic",
+      "Highlight family-friendly options",
+      "Show portion sizes",
+      "Include contact information",
+      "Respond to comments quickly"
+    ],
+    "dont": [
+      "Post during prayer times",
+      "Show alcohol or pork",
+      "Use inappropriate imagery",
+      "Make false health claims",
+      "Copy competitor content",
+      "Post low-quality images",
+      "Ignore customer complaints",
+      "Use offensive language"
+    ]
+  },
+  "emoji_guide": {
+    "food_types": {
+      "burger": "🍔",
+      "pizza": "🍕",
+      "pasta": "🍝",
+      "salad": "🥗",
+      "sandwich": "🥪",
+      "coffee": "☕",
+      "dessert": "🍰",
+      "juice": "🥤",
+      "seafood": "🦐",
+      "grilled": "🥩",
+      "breakfast": "🍳",
+      "arabic": "🧆"
+    },
+    "emotions": {
+      "delicious": "😋",
+      "love": "❤️",
+      "fire": "🔥",
+      "star": "⭐",
+      "celebration": "🎉",
+      "chef": "👨‍🍳",
+      "family": "👨‍👩‍👧‍👦",
+      "thumbsup": "👍"
+    },
+    "actions": {
+      "location": "📍",
+      "phone": "📞",
+      "clock": "⏰",
+      "delivery": "🚗",
+      "new": "🆕",
+      "hot": "🔥",
+      "money": "💰",
+      "gift": "🎁"
+    }
+  },
+  "competitor_benchmarks": {
+    "casual_dining": {
+      "avg_posts_per_week": 7,
+      "avg_engagement_rate": "3.5%",
+      "best_content_types": ["behind_scenes", "daily_specials", "customer_photos"],
+      "top_performers": ["slider_station", "pick_kw", "burger_boutique"]
+    },
+    "cafe": {
+      "avg_posts_per_week": 10,
+      "avg_engagement_rate": "4.2%",
+      "best_content_types": ["morning_coffee", "desserts", "ambiance"],
+      "top_performers": ["caribou_coffee", "starbucks_kuwait", "voi_cafe"]
+    },
+    "fine_dining": {
+      "avg_posts_per_week": 4,
+      "avg_engagement_rate": "2.8%",
+      "best_content_types": ["chef_specials", "plating_art", "ingredients"],
+      "top_performers": ["nobu_kuwait", "riccardo", "melenzane"]
+    }
+  }
+}

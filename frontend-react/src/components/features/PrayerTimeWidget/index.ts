@@ -1,0 +1,1 @@
+export { PrayerTimeWidget } from './PrayerTimeWidget';

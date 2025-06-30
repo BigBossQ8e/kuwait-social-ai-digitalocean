@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - AI-Powered Social Media Content for Kuwait</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Features */
+        .features {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        /* Plans */
+        .plans {
+            padding: 80px 0;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .plan-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .plan-card.featured {
+            border-color: #007bff;
+            position: relative;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 36px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">Kuwait Social AI</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#plans">Pricing</a>
+                <a href="/dashboard" class="btn btn-secondary">Client Login</a>
+                <a href="/admin-panel/" class="btn btn-primary">Admin Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>AI-Powered Social Media for Kuwait F&B 🍽️</h1>
+            <p>Create mouth-watering content for restaurants & cafes in Arabic & English instantly</p>
+            <div class="cta-buttons">
+                <a href="/signup" class="btn btn-primary" style="background: white; color: #764ba2; font-size: 18px; padding: 15px 30px;">Start Free Trial</a>
+                <a href="#features" class="btn btn-secondary" style="border-color: white; color: white; font-size: 18px; padding: 15px 30px;">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Built for Kuwait's Food & Beverage Industry</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🍔</div>
+                    <h3>F&B Content Specialist</h3>
+                    <p>AI trained specifically for restaurants, cafes, and food businesses in Kuwait</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h3>Food Photography Captions</h3>
+                    <p>Upload your dish photos and get appetizing descriptions in Arabic & English</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌙</div>
+                    <h3>Ramadan & Holiday Specials</h3>
+                    <p>Pre-made templates for Iftar, Suhoor, and Kuwait holiday promotions</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏷️</div>
+                    <h3>Menu Promotions</h3>
+                    <p>Create daily specials, new item launches, and limited-time offers that convert</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⭐</div>
+                    <h3>Review Response AI</h3>
+                    <p>Professional responses to customer reviews in both languages</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Peak Hours Insights</h3>
+                    <p>Post when hungry customers are browsing - lunch, dinner, and late-night times</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="plans" id="plans">
+        <div class="container">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+            <div class="plans-grid">
+                <div class="plan-card">
+                    <h3 class="plan-name">Trial</h3>
+                    <div class="plan-price">Free</div>
+                    <ul class="plan-features">
+                        <li>7 days free trial</li>
+                        <li>10 AI-generated posts</li>
+                        <li>Basic templates</li>
+                        <li>Email support</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-primary" style="width: 100%;">Start Trial</a>
+                </div>
+                <div class="plan-card featured">
+                    <div class="featured-badge">Most Popular</div>
+                    <h3 class="plan-name">Professional</h3>
+                    <div class="plan-price">15 KWD/mo</div>
+                    <ul class="plan-features">
+                        <li>100 AI-generated posts</li>
+                        <li>Advanced templates</li>
+                        <li>Image enhancement</li>
+                        <li>Priority support</li>
+                        <li>Analytics dashboard</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-primary" style="width: 100%;">Get Started</a>
+                </div>
+                <div class="plan-card">
+                    <h3 class="plan-name">Premium</h3>
+                    <div class="plan-price">49 KWD/mo</div>
+                    <ul class="plan-features">
+                        <li>500 AI-generated posts</li>
+                        <li>Custom templates</li>
+                        <li>Team collaboration</li>
+                        <li>API access</li>
+                        <li>Dedicated support</li>
+                    </ul>
+                    <a href="/signup" class="btn btn-primary" style="width: 100%;">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="/signup">Sign Up</a>
+            <a href="/dashboard">Client Login</a>
+            <a href="/admin-panel/">Admin</a>
+            <a href="mailto:support@kwtsocial.com">Support</a>
+        </div>
+        <p>&copy; 2024 Kuwait Social AI. Made with ❤️ in Kuwait</p>
+    </footer>
+</body>
+</html>
