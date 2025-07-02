@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - AI & Services Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #2d3748;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 18px;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: white;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .nav-tab {
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-tab:hover {
+            background: #f7fafc;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* AI Services Overview */
+        .ai-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .overview-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .overview-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .overview-label {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .overview-trend {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .trend-up {
+            color: #48bb78;
+        }
+        
+        .trend-down {
+            color: #f56565;
+        }
+        
+        /* AI Service Cards */
+        .ai-services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .ai-service-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .ai-service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .service-header {
+            padding: 25px;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .service-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .service-name {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .service-icon {
+            font-size: 28px;
+        }
+        
+        .service-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        
+        .status-inactive {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .service-provider {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        .service-body {
+            padding: 25px;
+        }
+        
+        /* Budget Section */
+        .budget-section {
+            margin-bottom: 25px;
+        }
+        
+        .budget-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .budget-title {
+            font-weight: 500;
+        }
+        
+        .budget-amount {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .budget-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .budget-usage {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .budget-usage.warning {
+            background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+        }
+        
+        .budget-usage.danger {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .budget-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #718096;
+        }
+        
+        /* Usage Stats */
+        .usage-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        
+        .usage-stat {
+            text-align: center;
+        }
+        
+        .usage-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .usage-stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        /* Action Buttons */
+        .service-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        /* API Keys Section */
+        .api-keys-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .api-key-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .api-key-info {
+            flex: 1;
+        }
+        
+        .api-key-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .api-key-value {
+            font-family: monospace;
+            font-size: 14px;
+            color: #718096;
+            background: #f7fafc;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .api-key-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Usage Chart */
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .time-filter {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover {
+            background: #f7fafc;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        /* Cost Analysis */
+        .cost-analysis {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .cost-breakdown {
+            margin-top: 20px;
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cost-service {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .cost-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: #f7fafc;
+        }
+        
+        .cost-details {
+            flex: 1;
+        }
+        
+        .cost-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .cost-usage {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .cost-amount {
+            text-align: right;
+        }
+        
+        .cost-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .cost-currency {
+            font-size: 14px;
+            color: #718096;
+        }
+        
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #cbd5e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #48bb78;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+        
+        /* Alerts */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .alert-icon {
+            font-size: 24px;
+        }
+        
+        /* Client Usage Table */
+        .usage-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px 30px;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f7fafc;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+        
+        .client-name {
+            font-weight: 500;
+        }
+        
+        .usage-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .usage-low {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        
+        .usage-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .usage-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI & Services Management</h1>
+            <p>Control and monitor all AI services, API integrations, and usage analytics</p>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchTab('overview')">
+                <span>📊</span>
+                <span>Overview</span>
+            </div>
+            <div class="nav-tab" onclick="switchTab('services')">
+                <span>🤖</span>
+                <span>AI Services</span>
+            </div>
+            <div class="nav-tab" onclick="switchTab('api-keys')">
+                <span>🔑</span>
+                <span>API Keys</span>
+            </div>
+            <div class="nav-tab" onclick="switchTab('budgets')">
+                <span>💰</span>
+                <span>Budget Control</span>
+            </div>
+            <div class="nav-tab" onclick="switchTab('usage')">
+                <span>📈</span>
+                <span>Usage Analytics</span>
+            </div>
+            <div class="nav-tab" onclick="switchTab('clients')">
+                <span>👥</span>
+                <span>Client Usage</span>
+            </div>
+        </div>
+        
+        <!-- Overview Tab -->
+        <div id="overview-tab" class="tab-content active">
+            <div class="ai-overview">
+                <div class="overview-card">
+                    <div class="overview-label">Total AI Budget</div>
+                    <div class="overview-value">350 KWD</div>
+                    <div class="overview-trend trend-up">↑ 12% from last month</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-label">Current Usage</div>
+                    <div class="overview-value">213 KWD</div>
+                    <div class="overview-trend">60.8% of budget</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-label">Active Services</div>
+                    <div class="overview-value">6/8</div>
+                    <div class="overview-trend">2 services paused</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-label">API Calls Today</div>
+                    <div class="overview-value">12,456</div>
+                    <div class="overview-trend trend-up">↑ 23% vs yesterday</div>
+                </div>
+            </div>
+            
+            <!-- Cost Breakdown Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">Monthly Cost Trend</div>
+                    <div class="time-filter">
+                        <button class="filter-btn">7D</button>
+                        <button class="filter-btn active">30D</button>
+                        <button class="filter-btn">90D</button>
+                        <button class="filter-btn">1Y</button>
+                    </div>
+                </div>
+                <canvas id="costChart" height="80"></canvas>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="cost-analysis">
+                <h3 style="margin-bottom: 20px;">Quick Actions</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <button class="btn btn-primary">🚨 Set Budget Alerts</button>
+                    <button class="btn btn-primary">📊 Generate Cost Report</button>
+                    <button class="btn btn-primary">🔄 Optimize Services</button>
+                    <button class="btn btn-secondary">📥 Export Usage Data</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Services Tab -->
+        <div id="services-tab" class="tab-content">
+            <!-- Budget Alert -->
+            <div class="alert alert-warning" style="margin-bottom: 30px;">
+                <span class="alert-icon">⚠️</span>
+                <div>
+                    <strong>Budget Alert:</strong> OpenAI service has reached 78% of its monthly budget. Consider increasing the limit or optimizing usage.
+                </div>
+            </div>
+            
+            <div class="ai-services-grid">
+                <!-- OpenAI Service -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">🧠</span>
+                                <span>OpenAI (ChatGPT)</span>
+                            </div>
+                            <div class="service-status status-active">Active</div>
+                        </div>
+                        <div class="service-provider">GPT-4 & GPT-3.5 Turbo</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">Monthly Budget</span>
+                                <span class="budget-amount">200 KWD</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage warning" style="width: 78%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Used: 156 KWD</span>
+                                <span>Remaining: 44 KWD</span>
+                            </div>
+                        </div>
+                        
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">8,234</div>
+                                <div class="usage-stat-label">API Calls</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">1.2M</div>
+                                <div class="usage-stat-label">Tokens Used</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">342</div>
+                                <div class="usage-stat-label">Active Clients</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">0.019</div>
+                                <div class="usage-stat-label">KWD/Call</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="btn btn-primary" onclick="openSettings('openai')">Configure</button>
+                            <button class="btn btn-secondary">View Logs</button>
+                            <button class="btn btn-secondary">Test API</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Generation Service -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">🎨</span>
+                                <span>DALL-E 3</span>
+                            </div>
+                            <div class="service-status status-active">Active</div>
+                        </div>
+                        <div class="service-provider">AI Image Generation</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">Monthly Budget</span>
+                                <span class="budget-amount">100 KWD</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage" style="width: 45%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Used: 45 KWD</span>
+                                <span>Remaining: 55 KWD</span>
+                            </div>
+                        </div>
+                        
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">892</div>
+                                <div class="usage-stat-label">Images Created</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">HD</div>
+                                <div class="usage-stat-label">Quality</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">156</div>
+                                <div class="usage-stat-label">Active Clients</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">0.050</div>
+                                <div class="usage-stat-label">KWD/Image</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="btn btn-primary" onclick="openSettings('dalle')">Configure</button>
+                            <button class="btn btn-secondary">Gallery</button>
+                            <button class="btn btn-secondary">Test Generate</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Translation Service -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">🌐</span>
+                                <span>DeepL Translation</span>
+                            </div>
+                            <div class="service-status status-active">Active</div>
+                        </div>
+                        <div class="service-provider">Arabic ↔ English Translation</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">Monthly Budget</span>
+                                <span class="budget-amount">50 KWD</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage" style="width: 24%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Used: 12 KWD</span>
+                                <span>Remaining: 38 KWD</span>
+                            </div>
+                        </div>
+                        
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">23K</div>
+                                <div class="usage-stat-label">Translations</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">AR/EN</div>
+                                <div class="usage-stat-label">Languages</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">89</div>
+                                <div class="usage-stat-label">Active Clients</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">0.001</div>
+                                <div class="usage-stat-label">KWD/Trans</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="btn btn-primary" onclick="openSettings('deepl')">Configure</button>
+                            <button class="btn btn-secondary">Test</button>
+                            <button class="btn btn-secondary">Languages</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Moderation -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">🛡️</span>
+                                <span>Content Moderation</span>
+                            </div>
+                            <div class="service-status status-active">Active</div>
+                        </div>
+                        <div class="service-provider">OpenAI Moderation API</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">Monthly Budget</span>
+                                <span class="budget-amount">FREE</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage" style="width: 0%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Unlimited Usage</span>
+                                <span>No Cost</span>
+                            </div>
+                        </div>
+                        
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">45.2K</div>
+                                <div class="usage-stat-label">Checks</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">342</div>
+                                <div class="usage-stat-label">Flagged</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">99.2%</div>
+                                <div class="usage-stat-label">Safe Content</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">0.8%</div>
+                                <div class="usage-stat-label">Blocked</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="btn btn-primary">View Reports</button>
+                            <button class="btn btn-secondary">Settings</button>
+                            <button class="btn btn-secondary">Test</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sentiment Analysis -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">😊</span>
+                                <span>Sentiment Analysis</span>
+                            </div>
+                            <div class="service-status status-warning">Limited</div>
+                        </div>
+                        <div class="service-provider">Custom ML Model</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">API Limit</span>
+                                <span class="budget-amount">10K/month</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage danger" style="width: 95%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Used: 9,500</span>
+                                <span>Remaining: 500</span>
+                            </div>
+                        </div>
+                        
+                        <div class="usage-stats">
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">9.5K</div>
+                                <div class="usage-stat-label">Analyzed</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">68%</div>
+                                <div class="usage-stat-label">Positive</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">24%</div>
+                                <div class="usage-stat-label">Neutral</div>
+                            </div>
+                            <div class="usage-stat">
+                                <div class="usage-stat-value">8%</div>
+                                <div class="usage-stat-label">Negative</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-actions">
+                            <button class="btn btn-danger">Upgrade Plan</button>
+                            <button class="btn btn-secondary">Reports</button>
+                            <button class="btn btn-secondary">Configure</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Competitor Analysis -->
+                <div class="ai-service-card">
+                    <div class="service-header">
+                        <div class="service-title">
+                            <div class="service-name">
+                                <span class="service-icon">🔍</span>
+                                <span>Competitor Analysis</span>
+                            </div>
+                            <div class="service-status status-inactive">Inactive</div>
+                        </div>
+                        <div class="service-provider">Custom Scraping + AI</div>
+                    </div>
+                    <div class="service-body">
+                        <div class="budget-section">
+                            <div class="budget-header">
+                                <span class="budget-title">Monthly Budget</span>
+                                <span class="budget-amount">0 KWD</span>
+                            </div>
+                            <div class="budget-bar">
+                                <div class="budget-usage" style="width: 0%;"></div>
+                            </div>
+                            <div class="budget-details">
+                                <span>Service Disabled</span>
+                                <span>Click to Enable</span>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; padding: 40px 0; color: #718096;">
+                            <p>This service is currently disabled</p>
+                            <button class="btn btn-primary" style="margin-top: 20px;">Enable Service</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Keys Tab -->
+        <div id="api-keys-tab" class="tab-content">
+            <div class="api-keys-section">
+                <h3 style="margin-bottom: 25px;">API Key Management</h3>
+                
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-name">OpenAI API Key</div>
+                        <div class="api-key-value">sk-...Hj4K (hidden)</div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-secondary">Reveal</button>
+                        <button class="btn btn-secondary">Rotate</button>
+                        <button class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-name">DALL-E API Key</div>
+                        <div class="api-key-value">sk-...9Kl2 (hidden)</div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-secondary">Reveal</button>
+                        <button class="btn btn-secondary">Rotate</button>
+                        <button class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-name">DeepL API Key</div>
+                        <div class="api-key-value">dl-...3Mn8 (hidden)</div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-secondary">Reveal</button>
+                        <button class="btn btn-secondary">Rotate</button>
+                        <button class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <div class="api-key-item">
+                    <div class="api-key-info">
+                        <div class="api-key-name">Google Cloud API</div>
+                        <div class="api-key-value">AIza...7Uj9 (hidden)</div>
+                    </div>
+                    <div class="api-key-actions">
+                        <button class="btn btn-secondary">Reveal</button>
+                        <button class="btn btn-secondary">Rotate</button>
+                        <button class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" style="margin-top: 20px;">+ Add New API Key</button>
+            </div>
+            
+            <!-- Security Settings -->
+            <div class="api-keys-section" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 25px;">Security Settings</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">API Key Rotation</label>
+                    <select class="form-select">
+                        <option>Every 30 days</option>
+                        <option>Every 60 days</option>
+                        <option>Every 90 days</option>
+                        <option>Manual only</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">IP Whitelist</label>
+                    <input type="text" class="form-input" placeholder="Enter IP addresses (comma separated)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Enable Rate Limiting</span>
+                        <div class="toggle-switch active"></div>
+                    </label>
+                </div>
+                
+                <button class="btn btn-primary">Save Security Settings</button>
+            </div>
+        </div>
+        
+        <!-- Budget Control Tab -->
+        <div id="budgets-tab" class="tab-content">
+            <div class="cost-analysis">
+                <h3 style="margin-bottom: 25px;">Budget Allocation & Control</h3>
+                
+                <div class="cost-breakdown">
+                    <div class="cost-item">
+                        <div class="cost-service">
+                            <div class="cost-icon" style="background: #ede9fe;">🧠</div>
+                            <div class="cost-details">
+                                <div class="cost-name">OpenAI Services</div>
+                                <div class="cost-usage">Content Generation, Moderation</div>
+                            </div>
+                        </div>
+                        <div class="cost-amount">
+                            <div class="cost-value">156</div>
+                            <div class="cost-currency">KWD / 200 KWD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-item">
+                        <div class="cost-service">
+                            <div class="cost-icon" style="background: #fee2e2;">🎨</div>
+                            <div class="cost-details">
+                                <div class="cost-name">Image Generation</div>
+                                <div class="cost-usage">DALL-E 3, Stable Diffusion</div>
+                            </div>
+                        </div>
+                        <div class="cost-amount">
+                            <div class="cost-value">45</div>
+                            <div class="cost-currency">KWD / 100 KWD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-item">
+                        <div class="cost-service">
+                            <div class="cost-icon" style="background: #dbeafe;">🌐</div>
+                            <div class="cost-details">
+                                <div class="cost-name">Translation Services</div>
+                                <div class="cost-usage">DeepL API</div>
+                            </div>
+                        </div>
+                        <div class="cost-amount">
+                            <div class="cost-value">12</div>
+                            <div class="cost-currency">KWD / 50 KWD</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-item" style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
+                        <div class="cost-service">
+                            <div class="cost-details">
+                                <div class="cost-name" style="font-size: 18px;">Total Monthly Budget</div>
+                            </div>
+                        </div>
+                        <div class="cost-amount">
+                            <div class="cost-value" style="font-size: 28px; color: #667eea;">213</div>
+                            <div class="cost-currency">KWD / 350 KWD</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Budget Rules -->
+                <div style="margin-top: 40px;">
+                    <h4 style="margin-bottom: 20px;">Budget Rules & Alerts</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Alert when usage reaches</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" class="form-input" value="75" style="width: 100px;">
+                            <span style="line-height: 40px;">% of monthly budget</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Auto-pause services at</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" class="form-input" value="95" style="width: 100px;">
+                            <span style="line-height: 40px;">% of monthly budget</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Budget reset day</label>
+                        <select class="form-select">
+                            <option>1st of each month</option>
+                            <option>15th of each month</option>
+                            <option>Last day of month</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary">Update Budget Rules</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Usage Analytics Tab -->
+        <div id="usage-tab" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">AI Service Usage Over Time</div>
+                    <div class="time-filter">
+                        <button class="filter-btn">Today</button>
+                        <button class="filter-btn active">This Week</button>
+                        <button class="filter-btn">This Month</button>
+                        <button class="filter-btn">Custom</button>
+                    </div>
+                </div>
+                <canvas id="usageChart" height="100"></canvas>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 20px;">Service Distribution</h3>
+                    <canvas id="pieChart" height="200"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 20px;">Peak Usage Hours</h3>
+                    <canvas id="hourlyChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Client Usage Tab -->
+        <div id="clients-tab" class="tab-content">
+            <div class="usage-table">
+                <div class="table-header">
+                    <div class="table-title">Top AI Service Consumers</div>
+                    <button class="btn btn-secondary">Export Data</button>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Package</th>
+                            <th>AI Calls</th>
+                            <th>Cost (KWD)</th>
+                            <th>Usage Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="client-name">Rizqa Restaurant</td>
+                            <td>Enterprise</td>
+                            <td>2,341</td>
+                            <td>45.23</td>
+                            <td><span class="usage-badge usage-high">High</span></td>
+                            <td><button class="btn btn-secondary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="client-name">Kuwait Towers Cafe</td>
+                            <td>Professional</td>
+                            <td>1,892</td>
+                            <td>32.45</td>
+                            <td><span class="usage-badge usage-high">High</span></td>
+                            <td><button class="btn btn-secondary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="client-name">Tea Time</td>
+                            <td>Professional</td>
+                            <td>1,234</td>
+                            <td>24.67</td>
+                            <td><span class="usage-badge usage-medium">Medium</span></td>
+                            <td><button class="btn btn-secondary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="client-name">Burger Hub</td>
+                            <td>Starter</td>
+                            <td>567</td>
+                            <td>11.23</td>
+                            <td><span class="usage-badge usage-low">Low</span></td>
+                            <td><button class="btn btn-secondary">View Details</button></td>
+                        </tr>
+                        <tr>
+                            <td class="client-name">Salmiya Sweets</td>
+                            <td>Professional</td>
+                            <td>892</td>
+                            <td>18.45</td>
+                            <td><span class="usage-badge usage-medium">Medium</span></td>
+                            <td><button class="btn btn-secondary">View Details</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Usage Insights -->
+            <div class="cost-analysis" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 20px;">Usage Insights</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="padding: 20px; background: #f7fafc; border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px;">Most Used Features</h4>
+                        <ul style="list-style: none; margin-top: 15px;">
+                            <li style="padding: 8px 0;">1. AI Caption Generation (45%)</li>
+                            <li style="padding: 8px 0;">2. Image Generation (28%)</li>
+                            <li style="padding: 8px 0;">3. Content Translation (15%)</li>
+                            <li style="padding: 8px 0;">4. Competitor Analysis (12%)</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="padding: 20px; background: #f7fafc; border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px;">Cost Optimization Tips</h4>
+                        <ul style="list-style: none; margin-top: 15px;">
+                            <li style="padding: 8px 0;">• Enable caching for repeated requests</li>
+                            <li style="padding: 8px 0;">• Use GPT-3.5 for simple tasks</li>
+                            <li style="padding: 8px 0;">• Batch translate similar content</li>
+                            <li style="padding: 8px 0;">• Set daily limits per client</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Configure OpenAI Service</h2>
+                <span class="close-btn" onclick="closeSettings()">&times;</span>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Service Status</label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="toggle-switch active"></div>
+                        <span>Service is Active</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Monthly Budget (KWD)</label>
+                    <input type="number" class="form-input" value="200">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Model Selection</label>
+                    <select class="form-select">
+                        <option>GPT-4 (Best quality, higher cost)</option>
+                        <option>GPT-3.5 Turbo (Good quality, lower cost)</option>
+                        <option>Mixed (Auto-select based on task)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Rate Limit (requests/minute)</label>
+                    <input type="number" class="form-input" value="60">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Allowed Features</label>
+                    <div style="display: grid; gap: 10px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked> Caption Generation
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked> Hashtag Suggestions
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" checked> Content Ideas
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox"> Advanced Analytics
+                        </label>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(navTab => {
+                navTab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Mark nav tab as active
+            event.target.classList.add('active');
+            
+            // Initialize charts if needed
+            if (tabName === 'overview') {
+                initCostChart();
+            } else if (tabName === 'usage') {
+                initUsageCharts();
+            }
+        }
+        
+        // Modal functions
+        function openSettings(service) {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+        
+        // Initialize cost chart
+        function initCostChart() {
+            const ctx = document.getElementById('costChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'OpenAI',
+                        data: [120, 135, 142, 156, 148, 162, 156],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Image Generation',
+                        data: [30, 35, 38, 42, 40, 44, 45],
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Translation',
+                        data: [8, 10, 11, 12, 11, 13, 12],
+                        borderColor: '#48bb78',
+                        backgroundColor: 'rgba(72, 187, 120, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' KWD';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize usage charts
+        function initUsageCharts() {
+            // Line chart for usage over time
+            const usageCtx = document.getElementById('usageChart').getContext('2d');
+            new Chart(usageCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'API Calls',
+                        data: [1234, 1567, 1890, 2234, 2567, 1234, 890],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Pie chart for service distribution
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['OpenAI', 'DALL-E', 'Translation', 'Sentiment', 'Moderation'],
+                    datasets: [{
+                        data: [45, 25, 15, 10, 5],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#48bb78',
+                            '#f59e0b',
+                            '#ef4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+            
+            // Bar chart for hourly usage
+            const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+            new Chart(hourlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
+                    datasets: [{
+                        label: 'API Calls',
+                        data: [234, 567, 890, 1234, 890, 456],
+                        backgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Toggle switches
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Initialize cost chart on load
+        initCostChart();
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update random values
+            const values = document.querySelectorAll('.usage-stat-value');
+            const randomValue = values[Math.floor(Math.random() * values.length)];
+            
+            if (randomValue.textContent.includes('K')) {
+                const current = parseFloat(randomValue.textContent);
+                randomValue.textContent = (current + 0.1).toFixed(1) + 'K';
+            } else if (!isNaN(randomValue.textContent)) {
+                const current = parseInt(randomValue.textContent);
+                randomValue.textContent = current + Math.floor(Math.random() * 10);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

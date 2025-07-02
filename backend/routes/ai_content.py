@@ -436,3 +436,23 @@ def get_trending_topics():
     except Exception as e:
         logger.error(f"Error fetching trending topics: {str(e)}")
         return jsonify({'error': 'Failed to fetch trending topics', 'message': str(e)}), 500
+
+
+# Arabic encoding test endpoint
+@ai_content_bp.route('/api/test/arabic', methods=['GET'])
+def test_arabic_encoding():
+    """Test endpoint to verify Arabic encoding"""
+    
+    test_data = {
+        "message": "مرحبا بكم في الكويت",
+        "restaurant": "مطعم بيت بيروت",
+        "area": "السالمية",
+        "special": "عرض خاص للعائلات",
+        "mixed": "Special offer - عرض خاص"
+    }
+    
+    return jsonify({
+        "status": "success",
+        "arabic_test": test_data,
+        "encoding": "UTF-8"
+    })

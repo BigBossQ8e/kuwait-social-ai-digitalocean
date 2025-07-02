@@ -83,7 +83,27 @@ Starter (19 KWD)     Professional (29 KWD)     Enterprise (49 KWD)
                      • Analytics               • API access
 ```
 
-### 4. Kuwait-Specific Controls 🇰🇼
+### 4. AI Prompt Management 🤖 *(NEW)*
+
+**Complete AI Configuration**:
+- Edit AI prompts for each service (OpenAI, Claude, Gemini)
+- Customize prompts for different content types
+- Enable/disable Kuwaiti NLP processing
+- Version control with rollback capability
+
+**Kuwaiti NLP Features**:
+- Dialect recognition and processing
+- Common phrase mappings (شلونك → كيف حالك)
+- Cultural context injection
+- Bilingual content optimization
+
+**Prompt Templates**:
+- Pre-built templates for common use cases
+- Restaurant posts with prayer time awareness
+- Retail promotions with local holidays
+- Engagement analysis with Kuwait patterns
+
+### 5. Kuwait-Specific Controls 🇰🇼
 
 **Prayer Time Settings**:
 - Auto-pause during prayers (20 minutes default)
@@ -166,11 +186,13 @@ Live dashboard showing:
 ### Phase 4: AI & Analytics (Week 6)
 **What**: Advanced features
 - AI service configuration
+- AI prompt management interface *(NEW)*
+- Kuwaiti NLP processing controls *(NEW)*
 - Usage tracking
 - Cost monitoring
 - Analytics dashboard
 
-**Result**: Complete AI management
+**Result**: Complete AI management with customizable prompts
 
 ### Phase 5: Polish & Deploy (Weeks 7-8)
 **What**: Finalize everything

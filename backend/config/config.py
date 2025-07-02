@@ -14,6 +14,10 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
     
+    # Arabic/Unicode support
+    JSON_AS_ASCII = False
+    JSONIFY_MIMETYPE = "application/json; charset=utf-8"
+    
     # Ensure critical secrets are set
     if not SECRET_KEY:
         raise ValueError("SECRET_KEY environment variable must be set")

@@ -46,6 +46,21 @@ from .reporting_models import (
 from .translation import Translation, TranslationHistory
 from .theme import ThemeSetting, ThemePreset, ThemeHistory
 from .telegram import TelegramAccount, PostApproval, TelegramCommand
+from .admin_panel import (
+    PlatformConfig, FeatureFlag, FeatureSubflag,
+    Package, PackageFeature, APIConfig,
+    AdminActivity, ConfigHistory, ConfigCache, ConfigSync
+)
+
+# Try to import AI prompts models
+try:
+    from .ai_prompts import AIPrompt, AIPromptVersion, AIPromptTemplate
+    ai_prompts_available = True
+except ImportError:
+    ai_prompts_available = False
+    AIPrompt = None
+    AIPromptVersion = None
+    AIPromptTemplate = None
 
 # Export all models
 __all__ = [
@@ -93,5 +108,13 @@ __all__ = [
     'Translation', 'TranslationHistory', 'ThemeSetting', 'ThemePreset', 'ThemeHistory',
     
     # Telegram models
-    'TelegramAccount', 'PostApproval', 'TelegramCommand'
+    'TelegramAccount', 'PostApproval', 'TelegramCommand',
+    
+    # Admin panel models
+    'PlatformConfig', 'FeatureFlag', 'FeatureSubflag',
+    'Package', 'PackageFeature', 'APIConfig',
+    'AdminActivity', 'ConfigHistory', 'ConfigCache', 'ConfigSync',
+    
+    # AI Prompts models
+    'AIPrompt', 'AIPromptVersion', 'AIPromptTemplate'
 ]

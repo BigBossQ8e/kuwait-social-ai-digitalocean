@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import extensions from centralized location
-from extensions import db, migrate, jwt, limiter
+from extensions import db, migrate, jwt, limiter, init_redis, socketio
 
 
 def create_app(config_name='development'):
@@ -43,15 +43,21 @@ def create_app(config_name='development'):
     # Configure Celery
     # configure_celery(app)  # Disabled - celery not configured
     
+    # Initialize WebSocket handlers
+    initialize_websocket_handlers(app)
+    
     # Initialize Telegram bot manager after app is fully configured
-    with app.app_context():
-        try:
-            from services.telegram_bot_manager import get_bot_manager
-            bot_manager = get_bot_manager()
-            bot_manager.initialize_from_database()
-            app.logger.info("Initialized Telegram bot manager")
-        except Exception as e:
-            app.logger.warning(f"Could not initialize Telegram bots: {e}")
+    if not os.environ.get('DISABLE_TELEGRAM_BOT'):
+        with app.app_context():
+            try:
+                from services.telegram_bot_manager import get_bot_manager
+                bot_manager = get_bot_manager()
+                bot_manager.initialize_from_database()
+                app.logger.info("Initialized Telegram bot manager")
+            except Exception as e:
+                app.logger.warning(f"Could not initialize Telegram bots: {e}")
+    else:
+        app.logger.info("Telegram bot initialization disabled")
     
     return app
 
@@ -92,6 +98,9 @@ def initialize_extensions(app):
     # Rate limiting
     limiter.init_app(app)
     
+    # Redis
+    init_redis(app)
+    
     # CORS
     # Get CORS origins from config, ensuring it's a list
     cors_origins = app.config.get('CORS_ORIGINS', [])
@@ -112,6 +121,13 @@ def initialize_extensions(app):
             "supports_credentials": True
         }
     })
+    
+    # Initialize SocketIO
+    socketio.init_app(app, 
+                      cors_allowed_origins=cors_origins if cors_origins else ['http://localhost:3000', 'http://localhost:5173'],
+                      async_mode='threading',
+                      logger=app.logger,
+                      engineio_logger=False)
 
 
 def configure_logging(app):
@@ -141,6 +157,7 @@ def register_blueprints(app):
     """Register all application blueprints"""
     
     from routes.auth import auth_bp
+    from routes.auth_enhanced import auth_enhanced_bp  # Enhanced auth with JWT refresh
     from routes.owner import owner_bp
     from routes.admin import admin_bp
     from routes.admin_clients import admin_clients_bp
@@ -155,8 +172,21 @@ def register_blueprints(app):
     from routes.prayer_times import prayer_times_bp
     from routes.ai_content import ai_content_bp
     from routes.ai_agents import ai_agents_bp
+    from routes.test_admin import test_admin_bp
+    from routes.auth_simple import auth_simple_bp
+    
+    # Import new admin panel routes
+    from routes.admin import register_admin_blueprints
+    
+    # Import health check routes (if exists)
+    try:
+        from routes.health import health_bp
+        health_check_available = True
+    except ImportError:
+        health_check_available = False
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    app.register_blueprint(auth_enhanced_bp)  # Enhanced auth routes with JWT refresh
     app.register_blueprint(owner_bp, url_prefix='/api/owner')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(admin_clients_bp, url_prefix='/api')
@@ -171,6 +201,16 @@ def register_blueprints(app):
     app.register_blueprint(translations_bp, url_prefix='/api')
     app.register_blueprint(ai_content_bp)  # New AI content routes
     app.register_blueprint(ai_agents_bp)  # AI agent-powered routes
+    app.register_blueprint(test_admin_bp)  # Test admin HTML page
+    app.register_blueprint(auth_simple_bp)  # Simple auth routes
+    
+    # Register health check blueprint if available
+    if health_check_available:
+        app.register_blueprint(health_bp)
+        app.logger.info("Registered health check endpoints")
+    
+    # Register new admin panel blueprints
+    register_admin_blueprints(app)
 
 
 def register_error_handlers(app):
@@ -214,3 +254,21 @@ def register_error_handlers(app):
 
 
 # Celery configuration removed - not currently used
+
+
+def initialize_websocket_handlers(app):
+    """Initialize WebSocket event handlers"""
+    with app.app_context():
+        try:
+            # Import WebSocket handlers - this registers the event handlers
+            from routes.admin.websocket import admin_ws_bp
+            from routes.client.websocket import client_ws_bp
+            
+            # Initialize the WebSocket service
+            from services.websocket_service import websocket_service
+            
+            app.logger.info("Initialized WebSocket handlers")
+        except ImportError as e:
+            app.logger.warning(f"WebSocket functionality disabled (missing dependencies): {e}")
+        except Exception as e:
+            app.logger.error(f"Failed to initialize WebSocket handlers: {e}")

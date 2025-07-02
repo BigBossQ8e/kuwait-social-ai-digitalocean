@@ -1,0 +1,5 @@
+Environment Comparison Report
+Generated: 2025-07-02 21:42:46.446966
+Total differences: 24
+Local Python: 3.9.6
+Production Python: 3.10.12

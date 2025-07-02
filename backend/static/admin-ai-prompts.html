@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - AI Prompt Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #2d3748;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .nav-tabs {
+            background: white;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .nav-tab {
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-tab:hover {
+            background: #f7fafc;
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Prompt Cards */
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .prompt-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .prompt-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .prompt-service {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .prompt-preview {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 15px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .prompt-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+        
+        .kuwaiti-badge {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Editor Section */
+        .editor-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .editor-container {
+            height: 300px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Kuwaiti NLP Section */
+        .nlp-section {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .nlp-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #cbd5e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #48bb78;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(30px);
+        }
+        
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .context-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .context-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .context-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+        
+        .context-term {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .context-meaning {
+            color: #718096;
+        }
+        
+        /* Test Section */
+        .test-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .test-results {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .result-section {
+            margin-bottom: 15px;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        /* Version History */
+        .version-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .version-item {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .version-item:hover {
+            background: white;
+        }
+        
+        .version-number {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .version-date {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .version-note {
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Prompt Management</h1>
+            <p>Create, edit, and manage AI prompts with Kuwaiti NLP support</p>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchTab('prompts')">All Prompts</div>
+            <div class="nav-tab" onclick="switchTab('create')">Create New</div>
+            <div class="nav-tab" onclick="switchTab('templates')">Templates</div>
+            <div class="nav-tab" onclick="switchTab('test')">Test Playground</div>
+        </div>
+        
+        <!-- Prompts List Tab -->
+        <div id="prompts-tab" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>AI Prompts Library</h2>
+                <div style="display: flex; gap: 10px;">
+                    <select class="form-select" style="width: 200px;" onchange="filterPrompts(this.value)">
+                        <option value="">All Categories</option>
+                        <option value="content">Content Generation</option>
+                        <option value="analysis">Analysis</option>
+                        <option value="translation">Translation</option>
+                        <option value="moderation">Moderation</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="switchTab('create')">+ New Prompt</button>
+                </div>
+            </div>
+            
+            <div class="prompts-grid" id="prompts-grid">
+                <!-- Sample Prompt Cards -->
+                <div class="prompt-card" onclick="editPrompt(1)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">Instagram Caption Generator</div>
+                        <div class="prompt-service">OpenAI</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Generate engaging Instagram captions for {business_type} in Kuwait. Consider local culture, trends, and include relevant hashtags...
+                    </div>
+                    <div class="prompt-meta">
+                        <div class="kuwaiti-badge">
+                            🇰🇼 Kuwaiti NLP Enabled
+                        </div>
+                        <span>Updated 2 days ago</span>
+                    </div>
+                </div>
+                
+                <div class="prompt-card" onclick="editPrompt(2)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">Food Description Writer</div>
+                        <div class="prompt-service">Claude</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Write appetizing descriptions for {dish_name} that appeal to Kuwaiti taste preferences. Mention ingredients, preparation method...
+                    </div>
+                    <div class="prompt-meta">
+                        <div class="kuwaiti-badge">
+                            🇰🇼 Kuwaiti NLP Enabled
+                        </div>
+                        <span>Updated 1 week ago</span>
+                    </div>
+                </div>
+                
+                <div class="prompt-card" onclick="editPrompt(3)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">Competitor Analysis</div>
+                        <div class="prompt-service">GPT-4</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Analyze competitor {competitor_name} social media strategy in Kuwait market. Focus on content themes, posting frequency...
+                    </div>
+                    <div class="prompt-meta">
+                        <span style="color: #718096;">Standard Processing</span>
+                        <span>Updated 3 days ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create/Edit Tab -->
+        <div id="create-tab" class="tab-content">
+            <div class="editor-section">
+                <div class="editor-header">
+                    <h2>Create AI Prompt</h2>
+                    <div>
+                        <button class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <button class="btn btn-primary" onclick="savePrompt()">Save Prompt</button>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Prompt Key (Unique Identifier)</label>
+                        <input type="text" class="form-input" id="prompt-key" placeholder="e.g., instagram_caption">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-input" id="prompt-name" placeholder="e.g., Instagram Caption Generator">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">AI Service</label>
+                        <select class="form-select" id="prompt-service">
+                            <option value="openai">OpenAI (GPT-4/GPT-3.5)</option>
+                            <option value="anthropic">Anthropic (Claude)</option>
+                            <option value="google">Google (Gemini)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="prompt-category">
+                            <option value="content">Content Generation</option>
+                            <option value="analysis">Analysis</option>
+                            <option value="translation">Translation</option>
+                            <option value="moderation">Moderation</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="prompt-description" placeholder="Describe what this prompt does..."></textarea>
+                </div>
+                
+                <!-- Kuwaiti NLP Settings -->
+                <div class="nlp-section">
+                    <div class="nlp-header">
+                        <h3>🇰🇼 Kuwaiti NLP Processing</h3>
+                        <div class="toggle-switch active" id="nlp-toggle" onclick="toggleNLP()"></div>
+                    </div>
+                    
+                    <div id="nlp-settings">
+                        <div class="form-group">
+                            <label class="form-label">Dialect Processing</label>
+                            <select class="form-select" id="dialect-processing">
+                                <option value="auto">Auto-detect</option>
+                                <option value="kuwaiti">Kuwaiti Dialect</option>
+                                <option value="gulf">Gulf Arabic</option>
+                                <option value="msa">Modern Standard Arabic</option>
+                            </select>
+                        </div>
+                        
+                        <div class="context-grid">
+                            <div class="context-card">
+                                <div class="context-title">Common Greetings</div>
+                                <div class="context-item">
+                                    <span class="context-term">هلا</span>
+                                    <span class="context-meaning">Hello</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">شلونك</span>
+                                    <span class="context-meaning">How are you</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">حياك</span>
+                                    <span class="context-meaning">Welcome</span>
+                                </div>
+                            </div>
+                            
+                            <div class="context-card">
+                                <div class="context-title">Food Terms</div>
+                                <div class="context-item">
+                                    <span class="context-term">مجبوس</span>
+                                    <span class="context-meaning">Rice dish</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">كرك</span>
+                                    <span class="context-meaning">Karak tea</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">هريس</span>
+                                    <span class="context-meaning">Wheat porridge</span>
+                                </div>
+                            </div>
+                            
+                            <div class="context-card">
+                                <div class="context-title">Expressions</div>
+                                <div class="context-item">
+                                    <span class="context-term">وايد</span>
+                                    <span class="context-meaning">Very/Much</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">زين</span>
+                                    <span class="context-meaning">Good</span>
+                                </div>
+                                <div class="context-item">
+                                    <span class="context-term">چذي</span>
+                                    <span class="context-meaning">Like this</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Prompt Content -->
+                <div class="form-group">
+                    <label class="form-label">System Prompt (Optional)</label>
+                    <textarea class="form-textarea" id="system-prompt" rows="4" placeholder="System instructions for the AI..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">User Prompt Template</label>
+                    <div style="font-size: 12px; color: #718096; margin-bottom: 10px;">
+                        Use {variable_name} for dynamic content. Available: {input}, {business_type}, {platform}, {language}
+                    </div>
+                    <textarea class="form-textarea" id="user-prompt" rows="6" placeholder="Write your prompt template here..."></textarea>
+                </div>
+                
+                <!-- Model Configuration -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <select class="form-select" id="model-select">
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="claude-3-opus">Claude 3 Opus</option>
+                            <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Temperature (0-2)</label>
+                        <input type="number" class="form-input" id="temperature" value="0.7" min="0" max="2" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Max Tokens</label>
+                        <input type="number" class="form-input" id="max-tokens" value="500" min="50" max="4000">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Templates Tab -->
+        <div id="templates-tab" class="tab-content">
+            <h2 style="margin-bottom: 20px;">Prompt Templates</h2>
+            
+            <div class="prompts-grid">
+                <div class="prompt-card" onclick="useTemplate(1)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">🌟 Kuwait Restaurant Post</div>
+                        <div class="kuwaiti-badge">Featured</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Perfect for restaurant social media posts with Kuwaiti cultural context, including prayer time considerations and local food preferences.
+                    </div>
+                    <div class="prompt-meta">
+                        <span>Used 156 times</span>
+                        <button class="btn btn-success" onclick="event.stopPropagation(); useTemplate(1)">Use Template</button>
+                    </div>
+                </div>
+                
+                <div class="prompt-card" onclick="useTemplate(2)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">🛍️ Retail Promotion</div>
+                        <div class="kuwaiti-badge">Popular</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Generate promotional content for retail businesses in Kuwait, considering shopping habits, seasonal events, and local holidays.
+                    </div>
+                    <div class="prompt-meta">
+                        <span>Used 89 times</span>
+                        <button class="btn btn-success" onclick="event.stopPropagation(); useTemplate(2)">Use Template</button>
+                    </div>
+                </div>
+                
+                <div class="prompt-card" onclick="useTemplate(3)">
+                    <div class="prompt-header">
+                        <div class="prompt-title">📊 Engagement Analysis</div>
+                        <div>AI Powered</div>
+                    </div>
+                    <div class="prompt-preview">
+                        Analyze social media engagement patterns for Kuwaiti audience, including best posting times around prayer schedules.
+                    </div>
+                    <div class="prompt-meta">
+                        <span>Used 67 times</span>
+                        <button class="btn btn-success" onclick="event.stopPropagation(); useTemplate(3)">Use Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Playground Tab -->
+        <div id="test-tab" class="tab-content">
+            <div class="test-section">
+                <h2 style="margin-bottom: 20px;">Test Your Prompts</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Prompt to Test</label>
+                    <select class="form-select" id="test-prompt-select">
+                        <option>Instagram Caption Generator</option>
+                        <option>Food Description Writer</option>
+                        <option>Competitor Analysis</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Test Input</label>
+                    <textarea class="test-input" id="test-input" placeholder="Enter your test text here. Try including some Kuwaiti dialect like 'وايد زين' or mention local places like 'الأفنيوز'"></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="testPrompt()">Test Prompt</button>
+                
+                <div class="test-results" id="test-results" style="display: none;">
+                    <h3 style="margin-bottom: 15px;">Test Results</h3>
+                    
+                    <div class="result-section">
+                        <div class="result-label">Original Input:</div>
+                        <div class="result-content" id="original-input"></div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <div class="result-label">After Kuwaiti NLP Processing:</div>
+                        <div class="result-content" id="processed-input"></div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <div class="result-label">Final Prompt Sent to AI:</div>
+                        <div class="result-content" id="final-prompt"></div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <div class="result-label">AI Configuration:</div>
+                        <div class="result-content" id="ai-config"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Prompt</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div style="display: flex; gap: 20px;">
+                <!-- Left side - Edit form -->
+                <div style="flex: 2;">
+                    <div id="edit-form">
+                        <!-- Form content will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Right side - Version history -->
+                <div style="flex: 1;">
+                    <h3 style="margin-bottom: 15px;">Version History</h3>
+                    <div class="version-list" id="version-list">
+                        <div class="version-item" onclick="rollbackToVersion(3)">
+                            <div class="version-number">Version 3 (Current)</div>
+                            <div class="version-date">2 days ago by Admin</div>
+                            <div class="version-note">Updated temperature and added Kuwaiti context</div>
+                        </div>
+                        <div class="version-item" onclick="rollbackToVersion(2)">
+                            <div class="version-number">Version 2</div>
+                            <div class="version-date">1 week ago by Admin</div>
+                            <div class="version-note">Added hashtag suggestions</div>
+                        </div>
+                        <div class="version-item" onclick="rollbackToVersion(1)">
+                            <div class="version-number">Version 1</div>
+                            <div class="version-date">2 weeks ago by Admin</div>
+                            <div class="version-note">Initial version</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let currentPromptId = null;
+        const API_BASE = 'http://localhost:5001';
+        
+        // Configure axios
+        axios.defaults.baseURL = API_BASE;
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        }
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(navTab => {
+                navTab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Mark nav tab as active
+            event.target.classList.add('active');
+            
+            // Load data if needed
+            if (tabName === 'prompts') {
+                loadPrompts();
+            }
+        }
+        
+        // Toggle NLP
+        function toggleNLP() {
+            const toggle = document.getElementById('nlp-toggle');
+            const settings = document.getElementById('nlp-settings');
+            
+            toggle.classList.toggle('active');
+            settings.style.display = toggle.classList.contains('active') ? 'block' : 'none';
+        }
+        
+        // Load prompts
+        async function loadPrompts() {
+            try {
+                const response = await axios.get('/api/admin/ai-prompts');
+                if (response.data.success) {
+                    displayPrompts(response.data.prompts);
+                }
+            } catch (error) {
+                console.error('Error loading prompts:', error);
+                // Use demo data
+                displayPrompts(getDemoPrompts());
+            }
+        }
+        
+        // Display prompts
+        function displayPrompts(prompts) {
+            const grid = document.getElementById('prompts-grid');
+            grid.innerHTML = prompts.map(prompt => `
+                <div class="prompt-card" onclick="editPrompt(${prompt.id})">
+                    <div class="prompt-header">
+                        <div class="prompt-title">${prompt.name}</div>
+                        <div class="prompt-service">${prompt.service}</div>
+                    </div>
+                    <div class="prompt-preview">
+                        ${prompt.user_prompt_template.substring(0, 150)}...
+                    </div>
+                    <div class="prompt-meta">
+                        ${prompt.enable_kuwaiti_nlp ? '<div class="kuwaiti-badge">🇰🇼 Kuwaiti NLP Enabled</div>' : '<span style="color: #718096;">Standard Processing</span>'}
+                        <span>Updated ${getRelativeTime(prompt.updated_at)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Test prompt
+        async function testPrompt() {
+            const testInput = document.getElementById('test-input').value;
+            
+            // Simulate test results
+            document.getElementById('test-results').style.display = 'block';
+            document.getElementById('original-input').textContent = testInput;
+            
+            // Simulate NLP processing
+            const processed = testInput
+                .replace(/شلونك/g, 'كيف حالك')
+                .replace(/وايد/g, 'كثير')
+                .replace(/چذي/g, 'هكذا');
+            
+            document.getElementById('processed-input').textContent = processed;
+            
+            const finalPrompt = `Generate an Instagram caption for a restaurant in Kuwait.\n\nInput: ${processed}\n\nConsider local culture and include relevant hashtags.`;
+            document.getElementById('final-prompt').textContent = finalPrompt;
+            
+            document.getElementById('ai-config').textContent = `Model: GPT-4\nTemperature: 0.7\nMax Tokens: 500\nKuwaiti NLP: Enabled`;
+        }
+        
+        // Helper functions
+        function getRelativeTime(date) {
+            // Simple relative time implementation
+            const now = new Date();
+            const past = new Date(date);
+            const diff = now - past;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) return 'today';
+            if (days === 1) return 'yesterday';
+            if (days < 7) return `${days} days ago`;
+            if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+            return `${Math.floor(days / 30)} months ago`;
+        }
+        
+        function getDemoPrompts() {
+            return [
+                {
+                    id: 1,
+                    name: 'Instagram Caption Generator',
+                    service: 'OpenAI',
+                    user_prompt_template: 'Generate engaging Instagram captions for {business_type} in Kuwait. Consider local culture, trends, and include relevant hashtags...',
+                    enable_kuwaiti_nlp: true,
+                    updated_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+                },
+                {
+                    id: 2,
+                    name: 'Food Description Writer',
+                    service: 'Claude',
+                    user_prompt_template: 'Write appetizing descriptions for {dish_name} that appeal to Kuwaiti taste preferences. Mention ingredients, preparation method...',
+                    enable_kuwaiti_nlp: true,
+                    updated_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                },
+                {
+                    id: 3,
+                    name: 'Competitor Analysis',
+                    service: 'GPT-4',
+                    user_prompt_template: 'Analyze competitor {competitor_name} social media strategy in Kuwait market. Focus on content themes, posting frequency...',
+                    enable_kuwaiti_nlp: false,
+                    updated_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+                }
+            ];
+        }
+        
+        // Initialize
+        loadPrompts();
+    </script>
+</body>
+</html>

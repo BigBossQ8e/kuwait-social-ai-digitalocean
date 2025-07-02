@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Admin Panel Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .auth-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .auth-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #38a169;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-connected {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        
+        .status-disconnected {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .platform-grid, .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .platform-card, .feature-card {
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .platform-card:hover, .feature-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .platform-header, .feature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .platform-name, .feature-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #48bb78;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-time {
+            color: #718096;
+            font-size: 12px;
+        }
+        
+        .websocket-log {
+            background: #1a202c;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+        }
+        
+        .log-time {
+            color: #4299e1;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .success-message {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Kuwait Social AI - Admin Panel</h1>
+            <p>Real-time Management Dashboard</p>
+        </div>
+        
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <h3>Authentication</h3>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="admin@example.com" value="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Password" value="password">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Login</button>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+                <span id="auth-status" class="status-badge status-disconnected">Not Authenticated</span>
+            </div>
+            <div id="auth-info" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+        </div>
+        
+        <!-- WebSocket Status -->
+        <div class="auth-section">
+            <h3>WebSocket Connection</h3>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="btn btn-success" onclick="connectWebSocket()">Connect</button>
+                <button class="btn btn-danger" onclick="disconnectWebSocket()">Disconnect</button>
+                <span id="ws-status" class="status-badge status-disconnected">Disconnected</span>
+            </div>
+            <div class="websocket-log" id="ws-log">
+                <div class="log-entry">WebSocket log will appear here...</div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Stats -->
+        <div class="dashboard" id="dashboard-stats" style="display: none;">
+            <div class="card">
+                <h3>Total Clients</h3>
+                <div class="stat-value" id="total-clients">0</div>
+                <div class="stat-label">Active Clients</div>
+            </div>
+            <div class="card">
+                <h3>Active Platforms</h3>
+                <div class="stat-value" id="active-platforms">0</div>
+                <div class="stat-label">Enabled Platforms</div>
+            </div>
+            <div class="card">
+                <h3>Features</h3>
+                <div class="stat-value" id="total-features">0</div>
+                <div class="stat-label">Total Features</div>
+            </div>
+            <div class="card">
+                <h3>Revenue</h3>
+                <div class="stat-value" id="monthly-revenue">$0</div>
+                <div class="stat-label">Monthly Revenue</div>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-navigation" id="main-tabs" style="display: none;">
+            <div class="tab active" onclick="switchTab('platforms')">Platforms</div>
+            <div class="tab" onclick="switchTab('features')">Features</div>
+            <div class="tab" onclick="switchTab('packages')">Packages</div>
+            <div class="tab" onclick="switchTab('activity')">Activity</div>
+            <div class="tab" onclick="switchTab('config-sync')">Config Sync</div>
+        </div>
+        
+        <!-- Platforms Section -->
+        <div class="section tab-content active" id="platforms-section" style="display: none;">
+            <h2>Platform Management</h2>
+            <div class="platform-grid" id="platforms-grid">
+                <div class="loading"></div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="section tab-content" id="features-section" style="display: none;">
+            <h2>Feature Flags</h2>
+            <div class="feature-grid" id="features-grid">
+                <div class="loading"></div>
+            </div>
+        </div>
+        
+        <!-- Packages Section -->
+        <div class="section tab-content" id="packages-section" style="display: none;">
+            <h2>Service Packages</h2>
+            <div id="packages-list">
+                <div class="loading"></div>
+            </div>
+        </div>
+        
+        <!-- Activity Feed -->
+        <div class="section tab-content" id="activity-section" style="display: none;">
+            <h2>Activity Feed</h2>
+            <div class="activity-feed" id="activity-feed">
+                <div class="loading"></div>
+            </div>
+        </div>
+        
+        <!-- Config Sync Section -->
+        <div class="section tab-content" id="config-sync-section" style="display: none;">
+            <h2>Configuration Sync</h2>
+            <div>
+                <button class="btn btn-primary" onclick="syncAllClients()">Sync All Clients</button>
+                <button class="btn btn-success" onclick="getConfigSyncStats()">Get Stats</button>
+            </div>
+            <div id="config-sync-stats" style="margin-top: 20px;">
+                <div class="loading"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let authToken = localStorage.getItem('adminToken');
+        let refreshToken = localStorage.getItem('adminRefreshToken');
+        let socket = null;
+        let isAuthenticated = false;
+        
+        // API base URL
+        const API_BASE = 'http://localhost:5001';
+        
+        // Initialize axios defaults
+        axios.defaults.baseURL = API_BASE;
+        
+        // Axios interceptor for auth
+        axios.interceptors.request.use(config => {
+            if (authToken) {
+                config.headers.Authorization = `Bearer ${authToken}`;
+            }
+            return config;
+        });
+        
+        // Response interceptor for token refresh
+        axios.interceptors.response.use(
+            response => response,
+            async error => {
+                if (error.response?.status === 401 && refreshToken) {
+                    try {
+                        const response = await axios.post('/api/auth/v2/refresh', {
+                            refresh_token: refreshToken
+                        });
+                        authToken = response.data.access_token;
+                        localStorage.setItem('adminToken', authToken);
+                        error.config.headers.Authorization = `Bearer ${authToken}`;
+                        return axios.request(error.config);
+                    } catch (refreshError) {
+                        logout();
+                        return Promise.reject(error);
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+        
+        // Login function
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await axios.post('/api/auth/v2/login', {
+                    email: email,
+                    password: password
+                });
+                
+                if (response.data.success) {
+                    authToken = response.data.access_token;
+                    refreshToken = response.data.refresh_token;
+                    localStorage.setItem('adminToken', authToken);
+                    localStorage.setItem('adminRefreshToken', refreshToken);
+                    
+                    isAuthenticated = true;
+                    updateAuthStatus(true);
+                    showMessage('Login successful!', 'success');
+                    
+                    // Load dashboard
+                    loadDashboard();
+                }
+            } catch (error) {
+                showMessage('Login failed: ' + (error.response?.data?.error || error.message), 'error');
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await axios.post('/api/auth/v2/logout');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            
+            authToken = null;
+            refreshToken = null;
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminRefreshToken');
+            isAuthenticated = false;
+            updateAuthStatus(false);
+            
+            // Hide dashboard
+            document.getElementById('dashboard-stats').style.display = 'none';
+            document.getElementById('main-tabs').style.display = 'none';
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            
+            // Disconnect WebSocket
+            if (socket) {
+                disconnectWebSocket();
+            }
+        }
+        
+        // Update auth status display
+        function updateAuthStatus(authenticated) {
+            const statusEl = document.getElementById('auth-status');
+            const infoEl = document.getElementById('auth-info');
+            
+            if (authenticated) {
+                statusEl.className = 'status-badge status-connected';
+                statusEl.textContent = 'Authenticated';
+                infoEl.textContent = 'Access token stored. Ready to connect WebSocket.';
+            } else {
+                statusEl.className = 'status-badge status-disconnected';
+                statusEl.textContent = 'Not Authenticated';
+                infoEl.textContent = 'Please login to access admin features.';
+            }
+        }
+        
+        // WebSocket connection
+        function connectWebSocket() {
+            if (!authToken) {
+                showMessage('Please login first', 'error');
+                return;
+            }
+            
+            if (socket && socket.connected) {
+                showMessage('Already connected', 'error');
+                return;
+            }
+            
+            logWebSocket('Connecting to WebSocket server...');
+            
+            socket = io('/admin', {
+                auth: {
+                    token: authToken
+                }
+            });
+            
+            // Connection events
+            socket.on('connect', () => {
+                logWebSocket('Connected to WebSocket server');
+                updateWebSocketStatus(true);
+            });
+            
+            socket.on('admin_connected', (data) => {
+                logWebSocket(`Admin connected: ${JSON.stringify(data)}`);
+                showMessage(`Connected as ${data.role}`, 'success');
+            });
+            
+            socket.on('disconnect', () => {
+                logWebSocket('Disconnected from WebSocket server');
+                updateWebSocketStatus(false);
+            });
+            
+            socket.on('error', (error) => {
+                logWebSocket(`Error: ${error.message || error}`);
+                showMessage(`WebSocket error: ${error.message}`, 'error');
+            });
+            
+            // Real-time updates
+            socket.on('platform_update', (data) => {
+                logWebSocket(`Platform update: ${data.data.platform} - ${data.data.is_enabled ? 'enabled' : 'disabled'}`);
+                loadPlatforms(); // Refresh platforms
+            });
+            
+            socket.on('feature_update', (data) => {
+                logWebSocket(`Feature update: ${data.data.feature_key}`);
+                loadFeatures(); // Refresh features
+            });
+            
+            socket.on('dashboard_update', (data) => {
+                logWebSocket('Dashboard update received');
+                updateDashboardStats(data.data);
+            });
+            
+            socket.on('activity_feed_update', (data) => {
+                logWebSocket('Activity feed update received');
+                updateActivityFeed(data.activities);
+            });
+        }
+        
+        // Disconnect WebSocket
+        function disconnectWebSocket() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                logWebSocket('Disconnected manually');
+                updateWebSocketStatus(false);
+            }
+        }
+        
+        // Update WebSocket status
+        function updateWebSocketStatus(connected) {
+            const statusEl = document.getElementById('ws-status');
+            if (connected) {
+                statusEl.className = 'status-badge status-connected';
+                statusEl.textContent = 'Connected';
+            } else {
+                statusEl.className = 'status-badge status-disconnected';
+                statusEl.textContent = 'Disconnected';
+            }
+        }
+        
+        // Log WebSocket events
+        function logWebSocket(message) {
+            const logEl = document.getElementById('ws-log');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">[${time}]</span> ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+            
+            // Keep only last 50 entries
+            while (logEl.children.length > 50) {
+                logEl.removeChild(logEl.firstChild);
+            }
+        }
+        
+        // Load dashboard
+        async function loadDashboard() {
+            document.getElementById('dashboard-stats').style.display = 'grid';
+            document.getElementById('main-tabs').style.display = 'flex';
+            document.getElementById('platforms-section').style.display = 'block';
+            
+            try {
+                const response = await axios.get('/api/admin/dashboard/overview');
+                if (response.data.success) {
+                    updateDashboardStats(response.data.data);
+                }
+            } catch (error) {
+                showMessage('Failed to load dashboard', 'error');
+            }
+            
+            // Load initial data
+            loadPlatforms();
+            loadActivityFeed();
+        }
+        
+        // Update dashboard stats
+        function updateDashboardStats(data) {
+            document.getElementById('total-clients').textContent = data.clients?.total || 0;
+            document.getElementById('active-platforms').textContent = data.platforms?.enabled || 0;
+            document.getElementById('total-features').textContent = data.features?.total || 0;
+            document.getElementById('monthly-revenue').textContent = `$${data.revenue?.monthly || 0}`;
+        }
+        
+        // Load platforms
+        async function loadPlatforms() {
+            try {
+                const response = await axios.get('/api/admin/platforms');
+                if (response.data.success) {
+                    displayPlatforms(response.data.platforms);
+                }
+            } catch (error) {
+                showMessage('Failed to load platforms', 'error');
+            }
+        }
+        
+        // Display platforms
+        function displayPlatforms(platforms) {
+            const grid = document.getElementById('platforms-grid');
+            grid.innerHTML = '';
+            
+            platforms.forEach(platform => {
+                const card = document.createElement('div');
+                card.className = 'platform-card';
+                card.innerHTML = `
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <span>${platform.icon || '📱'}</span>
+                            <span>${platform.display_name}</span>
+                        </div>
+                        <div class="toggle-switch ${platform.is_enabled ? 'active' : ''}" 
+                             onclick="togglePlatform(${platform.id}, ${!platform.is_enabled})"></div>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        Active Clients: ${platform.active_clients || 0}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Toggle platform
+        async function togglePlatform(platformId, enable) {
+            try {
+                const response = await axios.post(`/api/admin/platforms/${platformId}/toggle`, {
+                    is_enabled: enable
+                });
+                if (response.data.success) {
+                    showMessage(`Platform ${enable ? 'enabled' : 'disabled'}`, 'success');
+                    loadPlatforms();
+                }
+            } catch (error) {
+                showMessage('Failed to toggle platform', 'error');
+            }
+        }
+        
+        // Load features
+        async function loadFeatures() {
+            try {
+                const response = await axios.get('/api/admin/features');
+                if (response.data.success) {
+                    displayFeatures(response.data.features);
+                }
+            } catch (error) {
+                showMessage('Failed to load features', 'error');
+            }
+        }
+        
+        // Display features
+        function displayFeatures(features) {
+            const grid = document.getElementById('features-grid');
+            grid.innerHTML = '';
+            
+            features.forEach(feature => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.innerHTML = `
+                    <div class="feature-header">
+                        <div class="feature-name">
+                            <span>${feature.icon || '⚡'}</span>
+                            <span>${feature.display_name}</span>
+                        </div>
+                        <div class="toggle-switch ${feature.is_enabled ? 'active' : ''}" 
+                             onclick="toggleFeature(${feature.id}, ${!feature.is_enabled})"></div>
+                    </div>
+                    <div style="color: #666; font-size: 12px; margin-top: 8px;">
+                        ${feature.description || 'No description'}
+                    </div>
+                    <div style="color: #999; font-size: 11px; margin-top: 5px;">
+                        Category: ${feature.category || 'General'}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Toggle feature
+        async function toggleFeature(featureId, enable) {
+            try {
+                const response = await axios.post(`/api/admin/features/${featureId}/toggle`, {
+                    is_enabled: enable
+                });
+                if (response.data.success) {
+                    showMessage(`Feature ${enable ? 'enabled' : 'disabled'}`, 'success');
+                    loadFeatures();
+                }
+            } catch (error) {
+                showMessage('Failed to toggle feature', 'error');
+            }
+        }
+        
+        // Load packages
+        async function loadPackages() {
+            try {
+                const response = await axios.get('/api/admin/packages?include_features=true');
+                if (response.data.success) {
+                    displayPackages(response.data.packages);
+                }
+            } catch (error) {
+                showMessage('Failed to load packages', 'error');
+            }
+        }
+        
+        // Display packages
+        function displayPackages(packages) {
+            const list = document.getElementById('packages-list');
+            list.innerHTML = '';
+            
+            packages.forEach(pkg => {
+                const card = document.createElement('div');
+                card.className = 'platform-card';
+                card.style.marginBottom = '15px';
+                card.innerHTML = `
+                    <h4>${pkg.display_name}</h4>
+                    <div style="margin: 10px 0;">
+                        <strong>Price:</strong> ${pkg.price_kwd} KWD/month
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <strong>Features:</strong> ${pkg.features?.length || 0} features
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <strong>Status:</strong> 
+                        <span class="status-badge ${pkg.is_active ? 'status-connected' : 'status-disconnected'}">
+                            ${pkg.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+        
+        // Load activity feed
+        async function loadActivityFeed() {
+            try {
+                const response = await axios.get('/api/admin/dashboard/activity-feed');
+                if (response.data.success) {
+                    updateActivityFeed(response.data.activities);
+                }
+            } catch (error) {
+                showMessage('Failed to load activity feed', 'error');
+            }
+        }
+        
+        // Update activity feed
+        function updateActivityFeed(activities) {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `
+                    <div class="activity-content">
+                        <div><strong>${activity.action}</strong> - ${activity.resource_type}</div>
+                        <div class="activity-time">${new Date(activity.timestamp).toLocaleString()}</div>
+                    </div>
+                `;
+                feed.appendChild(item);
+            });
+        }
+        
+        // Config sync functions
+        async function syncAllClients() {
+            try {
+                showMessage('Syncing all clients...', 'success');
+                const response = await axios.post('/api/admin/config-sync/sync-all');
+                if (response.data.success) {
+                    showMessage(`Synced ${response.data.result.synced} clients`, 'success');
+                    getConfigSyncStats();
+                }
+            } catch (error) {
+                showMessage('Failed to sync clients', 'error');
+            }
+        }
+        
+        async function getConfigSyncStats() {
+            try {
+                const response = await axios.get('/api/admin/config-sync/stats');
+                if (response.data.success) {
+                    displayConfigSyncStats(response.data.statistics);
+                }
+            } catch (error) {
+                showMessage('Failed to load sync stats', 'error');
+            }
+        }
+        
+        function displayConfigSyncStats(stats) {
+            const statsEl = document.getElementById('config-sync-stats');
+            statsEl.innerHTML = `
+                <div class="dashboard">
+                    <div class="card">
+                        <h3>Total Clients</h3>
+                        <div class="stat-value">${stats.total_clients}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Recent Syncs (24h)</h3>
+                        <div class="stat-value">${stats.recent_syncs_24h}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Failed Syncs</h3>
+                        <div class="stat-value">${stats.failed_syncs}</div>
+                    </div>
+                    <div class="card">
+                        <h3>Sync Health</h3>
+                        <div class="status-badge ${stats.sync_health === 'healthy' ? 'status-connected' : 'status-disconnected'}">
+                            ${stats.sync_health}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab active state
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(`${tabName}-section`).style.display = 'block';
+            
+            // Load data for the section
+            switch(tabName) {
+                case 'platforms':
+                    loadPlatforms();
+                    break;
+                case 'features':
+                    loadFeatures();
+                    break;
+                case 'packages':
+                    loadPackages();
+                    break;
+                case 'activity':
+                    loadActivityFeed();
+                    break;
+                case 'config-sync':
+                    getConfigSyncStats();
+                    break;
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const msgEl = document.createElement('div');
+            msgEl.className = type === 'error' ? 'error-message' : 'success-message';
+            msgEl.textContent = message;
+            document.querySelector('.auth-section').appendChild(msgEl);
+            setTimeout(() => msgEl.remove(), 5000);
+        }
+        
+        // Check auth on load
+        window.onload = function() {
+            if (authToken) {
+                isAuthenticated = true;
+                updateAuthStatus(true);
+                loadDashboard();
+            }
+        };
+    </script>
+</body>
+</html>

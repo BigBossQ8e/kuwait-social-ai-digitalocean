@@ -289,7 +289,7 @@ Create {content_type} content for {platform} with these guidelines:
 - Tone: {tone}
 - Character limit: {caption_limit}
 - Hashtag limit: {hashtag_limit}
-- Cultural context: {json.dumps(self.kuwait_context)}
+- Cultural context: {json.dumps(self.kuwait_context, ensure_ascii=False)}
 
 Kuwait-specific requirements:
 1. Be respectful of Islamic values and local customs

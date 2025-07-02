@@ -1,0 +1,4 @@
+Dependency Check - 2025-07-02 21:34:25.289984
+Python: 3.11.10 (main, Jul  1 2025, 17:04:36) [Clang 17.0.0 (clang-1700.0.13.5)]
+All dependencies OK: True
+Flask app imports: True

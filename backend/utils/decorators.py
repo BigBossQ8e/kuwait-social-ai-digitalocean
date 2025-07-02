@@ -3,9 +3,10 @@ Custom decorators for Kuwait Social AI
 """
 
 from functools import wraps
-from flask import jsonify
+from flask import jsonify, request, g
 from flask_jwt_extended import get_jwt, verify_jwt_in_request
 from models import db, User, Client, Admin, Owner
+from services.auth_service import auth_service
 
 def role_required(*allowed_roles):
     """Decorator to check if user has required role"""
@@ -46,7 +47,14 @@ def admin_required(f):
         verify_jwt_in_request()
         claims = get_jwt()
         
-        if claims.get('role') not in ['admin', 'owner']:
+        # Check multiple ways to determine if user is admin
+        is_admin = (
+            claims.get('role') in ['admin', 'owner'] or
+            claims.get('is_admin') == True or
+            claims.get('admin_role') in ['owner', 'admin', 'support']
+        )
+        
+        if not is_admin:
             return jsonify({'error': 'Admin access required'}), 403
             
         return f(*args, **kwargs)
@@ -362,3 +370,112 @@ def clear_cache(pattern=None):
     except Exception as e:
         current_app.logger.error(f"Clear cache error: {str(e)}")
         return False
+
+
+# Enhanced decorators for JWT refresh token system
+def token_required(f):
+    """Enhanced decorator to require valid JWT token (compatible with new auth service)"""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        auth_header = request.headers.get('Authorization')
+        
+        if auth_header:
+            try:
+                token = auth_header.split(' ')[1]  # Bearer <token>
+            except IndexError:
+                return jsonify({
+                    'success': False,
+                    'error': 'Invalid token format'
+                }), 401
+        
+        if not token:
+            return jsonify({
+                'success': False,
+                'error': 'Authentication token is missing'
+            }), 401
+        
+        # Verify token using new auth service
+        payload, error = auth_service.verify_token(token)
+        if error:
+            return jsonify({
+                'success': False,
+                'error': error
+            }), 401
+        
+        # Add user info to context
+        g.current_user_id = payload['user_id']
+        g.current_user = User.query.get(payload['user_id'])
+        g.token_payload = payload
+        
+        if not g.current_user:
+            return jsonify({
+                'success': False,
+                'error': 'User not found'
+            }), 401
+        
+        return f(*args, **kwargs)
+    
+    return decorated
+
+
+def permission_required(permission):
+    """Require specific permission (for granular admin permissions)"""
+    def decorator(f):
+        @wraps(f)
+        @admin_required
+        def decorated(*args, **kwargs):
+            admin = g.current_user.admin_profile
+            
+            # Owners have all permissions
+            if admin.role == 'owner':
+                return f(*args, **kwargs)
+            
+            # Check specific permission
+            permissions = g.token_payload.get('permissions', [])
+            
+            # Check for exact permission or wildcard
+            if permission not in permissions and 'all' not in permissions:
+                # Check for partial permissions (e.g., 'clients:read' when 'clients' is required)
+                permission_base = permission.split(':')[0]
+                if not any(p.startswith(permission_base) for p in permissions):
+                    return jsonify({
+                        'success': False,
+                        'error': f'Permission required: {permission}'
+                    }), 403
+            
+            return f(*args, **kwargs)
+        
+        return decorated
+    return decorator
+
+
+def validate_json(*required_fields):
+    """Validate JSON request has required fields"""
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if not request.is_json:
+                return jsonify({
+                    'success': False,
+                    'error': 'Content-Type must be application/json'
+                }), 400
+            
+            data = request.get_json()
+            
+            # Check required fields
+            missing_fields = []
+            for field in required_fields:
+                if field not in data:
+                    missing_fields.append(field)
+            
+            if missing_fields:
+                return jsonify({
+                    'success': False,
+                    'error': f'Missing required fields: {", ".join(missing_fields)}'
+                }), 400
+            
+            return f(*args, **kwargs)
+        
+        return decorated
+    return decorator

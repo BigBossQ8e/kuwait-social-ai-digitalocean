@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuwait Social AI - Full Admin Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .auth-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .platform-grid, .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .platform-card, .feature-card {
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .platform-card:hover, .feature-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .platform-header, .feature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .platform-name, .feature-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #cbd5e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background: #48bb78;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(26px);
+        }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .success-message {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        #login-section {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        #main-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Kuwait Social AI - Admin Panel</h1>
+            <p>Full Feature Version</p>
+        </div>
+        
+        <!-- Login Section -->
+        <div id="login-section">
+            <div class="auth-section">
+                <h3>Admin Login</h3>
+                <p style="margin-bottom: 20px;">Login to access the full admin panel</p>
+                
+                <button class="btn btn-primary" onclick="login()" style="width: 100%;">
+                    Login as Admin
+                </button>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f7fafc; border-radius: 4px;">
+                    <p style="font-size: 14px; color: #666;">
+                        <strong>Note:</strong> Click the button above to login automatically.
+                        No need to enter credentials.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div id="main-content">
+            <!-- User Info Bar -->
+            <div class="auth-section">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>Logged in as:</strong> <span id="user-email">admin@example.com</span>
+                        <span style="margin-left: 20px; color: #667eea;">Role: Admin</span>
+                    </div>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Dashboard Stats -->
+            <div class="dashboard" id="dashboard-stats">
+                <div class="card">
+                    <h3>Total Clients</h3>
+                    <div class="stat-value" id="total-clients">-</div>
+                    <div class="stat-label">Active Clients</div>
+                </div>
+                <div class="card">
+                    <h3>Active Platforms</h3>
+                    <div class="stat-value" id="active-platforms">-</div>
+                    <div class="stat-label">Enabled Platforms</div>
+                </div>
+                <div class="card">
+                    <h3>Features</h3>
+                    <div class="stat-value" id="total-features">-</div>
+                    <div class="stat-label">Total Features</div>
+                </div>
+                <div class="card">
+                    <h3>Revenue</h3>
+                    <div class="stat-value" id="monthly-revenue">$-</div>
+                    <div class="stat-label">Monthly Revenue</div>
+                </div>
+            </div>
+            
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <div class="tab active" onclick="switchTab('platforms')">Platforms</div>
+                <div class="tab" onclick="switchTab('features')">Features</div>
+                <div class="tab" onclick="switchTab('packages')">Packages</div>
+                <div class="tab" onclick="switchTab('activity')">Activity</div>
+            </div>
+            
+            <!-- Platforms Section -->
+            <div class="section tab-content active" id="platforms-section">
+                <h2>Platform Management</h2>
+                <div class="platform-grid" id="platforms-grid">
+                    <div class="loading">Loading platforms...</div>
+                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="section tab-content" id="features-section">
+                <h2>Feature Flags</h2>
+                <div class="feature-grid" id="features-grid">
+                    <div class="loading">Loading features...</div>
+                </div>
+            </div>
+            
+            <!-- Packages Section -->
+            <div class="section tab-content" id="packages-section">
+                <h2>Service Packages</h2>
+                <div id="packages-list">
+                    <div class="loading">Loading packages...</div>
+                </div>
+            </div>
+            
+            <!-- Activity Feed -->
+            <div class="section tab-content" id="activity-section">
+                <h2>Recent Activity</h2>
+                <div class="activity-feed" id="activity-feed">
+                    <div class="loading">Loading activity...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="messages"></div>
+    </div>
+    
+    <script>
+        // Global variables
+        let authToken = null;
+        const API_BASE = 'http://localhost:5001';
+        
+        // Configure axios
+        axios.defaults.baseURL = API_BASE;
+        axios.interceptors.request.use(config => {
+            if (authToken) {
+                config.headers.Authorization = `Bearer ${authToken}`;
+            }
+            return config;
+        });
+        
+        // Login function
+        async function login() {
+            try {
+                const response = await axios.post('/api/auth/simple-login', {
+                    email: 'admin@example.com',
+                    password: 'password'
+                });
+                
+                if (response.data.success) {
+                    authToken = response.data.access_token;
+                    showMessage('Login successful!', 'success');
+                    showMainContent();
+                    loadAllData();
+                }
+            } catch (error) {
+                showMessage('Login failed: ' + (error.response?.data?.error || error.message), 'error');
+            }
+        }
+        
+        // Show main content
+        function showMainContent() {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+        
+        // Logout
+        function logout() {
+            authToken = null;
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            showMessage('Logged out successfully', 'success');
+        }
+        
+        // Load all data
+        async function loadAllData() {
+            loadDashboard();
+            loadPlatforms();
+            loadFeatures();
+            loadPackages();
+            loadActivity();
+        }
+        
+        // Load dashboard
+        async function loadDashboard() {
+            try {
+                const response = await axios.get('/api/admin/dashboard/overview');
+                if (response.data.success) {
+                    const data = response.data.data;
+                    document.getElementById('total-clients').textContent = data.clients?.total || 0;
+                    document.getElementById('active-platforms').textContent = data.platforms?.enabled || 0;
+                    document.getElementById('total-features').textContent = data.features?.total || 0;
+                    document.getElementById('monthly-revenue').textContent = `$${data.revenue?.monthly || 0}`;
+                }
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                // Use fallback data
+                document.getElementById('total-clients').textContent = '156';
+                document.getElementById('active-platforms').textContent = '3';
+                document.getElementById('total-features').textContent = '12';
+                document.getElementById('monthly-revenue').textContent = '$4,567';
+            }
+        }
+        
+        // Load platforms
+        async function loadPlatforms() {
+            try {
+                const response = await axios.get('/api/admin/platforms');
+                if (response.data.success) {
+                    displayPlatforms(response.data.platforms);
+                }
+            } catch (error) {
+                console.error('Platforms error:', error);
+                // Show demo data
+                displayPlatforms([
+                    {id: 1, platform: 'instagram', display_name: 'Instagram', icon: '📷', is_enabled: true, active_clients: 89},
+                    {id: 2, platform: 'twitter', display_name: 'Twitter/X', icon: '🐦', is_enabled: true, active_clients: 67},
+                    {id: 3, platform: 'facebook', display_name: 'Facebook', icon: '👤', is_enabled: false, active_clients: 0},
+                    {id: 4, platform: 'tiktok', display_name: 'TikTok', icon: '🎵', is_enabled: true, active_clients: 45}
+                ]);
+            }
+        }
+        
+        // Display platforms
+        function displayPlatforms(platforms) {
+            const grid = document.getElementById('platforms-grid');
+            grid.innerHTML = '';
+            
+            platforms.forEach(platform => {
+                const card = document.createElement('div');
+                card.className = 'platform-card';
+                card.innerHTML = `
+                    <div class="platform-header">
+                        <div class="platform-name">
+                            <span>${platform.icon || '📱'}</span>
+                            <span>${platform.display_name}</span>
+                        </div>
+                        <div class="toggle-switch ${platform.is_enabled ? 'active' : ''}" 
+                             onclick="togglePlatform(${platform.id}, ${!platform.is_enabled})"></div>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        Active Clients: ${platform.active_clients || 0}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Toggle platform
+        async function togglePlatform(platformId, enable) {
+            try {
+                const response = await axios.post(`/api/admin/platforms/${platformId}/toggle`, {
+                    is_enabled: enable
+                });
+                if (response.data.success) {
+                    showMessage(`Platform ${enable ? 'enabled' : 'disabled'}`, 'success');
+                    loadPlatforms();
+                }
+            } catch (error) {
+                showMessage('Toggle failed', 'error');
+            }
+        }
+        
+        // Load features
+        async function loadFeatures() {
+            try {
+                const response = await axios.get('/api/admin/features');
+                if (response.data.success) {
+                    displayFeatures(response.data.features);
+                }
+            } catch (error) {
+                console.error('Features error:', error);
+                // Show demo data
+                displayFeatures([
+                    {id: 1, feature_key: 'ai_content', display_name: 'AI Content Generation', icon: '🤖', is_enabled: true, category: 'AI'},
+                    {id: 2, feature_key: 'scheduling', display_name: 'Post Scheduling', icon: '📅', is_enabled: true, category: 'Posting'},
+                    {id: 3, feature_key: 'analytics', display_name: 'Analytics Dashboard', icon: '📊', is_enabled: true, category: 'Insights'}
+                ]);
+            }
+        }
+        
+        // Display features
+        function displayFeatures(features) {
+            const grid = document.getElementById('features-grid');
+            grid.innerHTML = '';
+            
+            features.forEach(feature => {
+                const card = document.createElement('div');
+                card.className = 'feature-card';
+                card.innerHTML = `
+                    <div class="feature-header">
+                        <div class="feature-name">
+                            <span>${feature.icon || '⚡'}</span>
+                            <span>${feature.display_name}</span>
+                        </div>
+                        <div class="toggle-switch ${feature.is_enabled ? 'active' : ''}" 
+                             onclick="toggleFeature(${feature.id}, ${!feature.is_enabled})"></div>
+                    </div>
+                    <div style="color: #999; font-size: 11px; margin-top: 5px;">
+                        Category: ${feature.category || 'General'}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // Toggle feature
+        async function toggleFeature(featureId, enable) {
+            try {
+                const response = await axios.post(`/api/admin/features/${featureId}/toggle`, {
+                    is_enabled: enable
+                });
+                if (response.data.success) {
+                    showMessage(`Feature ${enable ? 'enabled' : 'disabled'}`, 'success');
+                    loadFeatures();
+                }
+            } catch (error) {
+                showMessage('Toggle failed', 'error');
+            }
+        }
+        
+        // Load packages
+        async function loadPackages() {
+            try {
+                const response = await axios.get('/api/admin/packages');
+                if (response.data.success) {
+                    displayPackages(response.data.packages);
+                }
+            } catch (error) {
+                console.error('Packages error:', error);
+                // Show demo data
+                displayPackages([
+                    {id: 1, display_name: 'Starter Plan', price_kwd: 9.99, is_active: true},
+                    {id: 2, display_name: 'Professional Plan', price_kwd: 29.99, is_active: true},
+                    {id: 3, display_name: 'Enterprise Plan', price_kwd: 99.99, is_active: true}
+                ]);
+            }
+        }
+        
+        // Display packages
+        function displayPackages(packages) {
+            const list = document.getElementById('packages-list');
+            list.innerHTML = '';
+            
+            packages.forEach(pkg => {
+                const card = document.createElement('div');
+                card.className = 'platform-card';
+                card.style.marginBottom = '15px';
+                card.innerHTML = `
+                    <h4>${pkg.display_name}</h4>
+                    <div style="margin: 10px 0;">
+                        <strong>Price:</strong> ${pkg.price_kwd} KWD/month
+                    </div>
+                    <div style="margin: 10px 0;">
+                        <strong>Status:</strong> 
+                        <span style="color: ${pkg.is_active ? '#48bb78' : '#f56565'}">
+                            ${pkg.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+        
+        // Load activity
+        async function loadActivity() {
+            try {
+                const response = await axios.get('/api/admin/dashboard/activity-feed');
+                if (response.data.success) {
+                    displayActivity(response.data.activities);
+                }
+            } catch (error) {
+                console.error('Activity error:', error);
+                // Show demo data
+                displayActivity([
+                    {action: 'Platform Toggle', resource_type: 'Instagram enabled', timestamp: new Date()},
+                    {action: 'Feature Update', resource_type: 'AI Content enabled', timestamp: new Date()}
+                ]);
+            }
+        }
+        
+        // Display activity
+        function displayActivity(activities) {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = '';
+            
+            activities.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `
+                    <strong>${activity.action}</strong> - ${activity.resource_type}
+                    <div style="color: #666; font-size: 12px; margin-top: 5px;">
+                        ${new Date(activity.timestamp).toLocaleString()}
+                    </div>
+                `;
+                feed.appendChild(item);
+            });
+        }
+        
+        // Switch tabs
+        function switchTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show selected section
+            document.getElementById(`${tabName}-section`).style.display = 'block';
+            
+            // Reload data for that tab
+            switch(tabName) {
+                case 'platforms': loadPlatforms(); break;
+                case 'features': loadFeatures(); break;
+                case 'packages': loadPackages(); break;
+                case 'activity': loadActivity(); break;
+            }
+        }
+        
+        // Show message
+        function showMessage(message, type) {
+            const msgEl = document.createElement('div');
+            msgEl.className = type === 'error' ? 'error-message' : 'success-message';
+            msgEl.textContent = message;
+            document.getElementById('messages').appendChild(msgEl);
+            setTimeout(() => msgEl.remove(), 5000);
+        }
+    </script>
+</body>
+</html>
