@@ -111,6 +111,7 @@ class Client(db.Model):
     posts = db.relationship('Post', back_populates='client', cascade='all, delete-orphan')
     analytics = db.relationship('Analytics', back_populates='client', cascade='all, delete-orphan')
     features = db.relationship('Feature', secondary=client_features, back_populates='clients')
+    telegram_account = db.relationship('TelegramAccount', back_populates='client', uselist=False)
     
     def to_dict(self):
         return {
@@ -188,6 +189,7 @@ class Post(db.Model):
     client = db.relationship('Client', back_populates='posts')
     analytics = db.relationship('PostAnalytics', back_populates='post', uselist=False)
     campaign = db.relationship('Campaign', back_populates='posts')
+    approval = db.relationship('PostApproval', back_populates='post', uselist=False)
 
 class PostAnalytics(db.Model):
     """Analytics for individual posts"""

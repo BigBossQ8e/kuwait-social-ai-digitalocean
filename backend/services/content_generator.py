@@ -66,13 +66,13 @@ class ContentGenerator:
             
             # Generate content using the new client approach
             response = self.client.chat.completions.create(
-                model="gpt-4",
+                model="gpt-4-turbo-preview",  # Updated to latest model
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=500,
-                temperature=0.7
+                max_tokens=2000,  # Increased for better responses
+                temperature=0.8  # Better for creative content
             )
             
             generated_text = response.choices[0].message.content

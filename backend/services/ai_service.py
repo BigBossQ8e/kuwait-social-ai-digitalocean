@@ -1,6 +1,6 @@
 """
 AI Service for content generation, translation, and enhancement
-Supports OpenAI and Claude APIs
+Supports OpenAI and Claude APIs with Multi-Agent Orchestration
 """
 
 import os
@@ -25,6 +25,16 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+# Import agent framework
+try:
+    from .ai_agents.crews import (
+        ContentCreationCrew, CampaignManagementCrew, AnalyticsInsightsCrew
+    )
+    AGENTS_AVAILABLE = True
+except (ImportError, TypeError) as e:
+    AGENTS_AVAILABLE = False
+    logger.warning(f"Agent framework not available: {str(e)}. Using direct AI generation only.")
+
 class AIService:
     """Service for AI-powered content generation and processing"""
     
@@ -39,7 +49,19 @@ class AIService:
             
         if self.anthropic_api_key:
             self.anthropic_client = Anthropic(api_key=self.anthropic_api_key)
-            
+        
+        # Initialize agent crews if available
+        self.agents_enabled = AGENTS_AVAILABLE and os.getenv('ENABLE_AGENTS', 'true').lower() == 'true'
+        if self.agents_enabled:
+            try:
+                self.content_crew = ContentCreationCrew()
+                self.campaign_crew = CampaignManagementCrew()
+                self.analytics_crew = AnalyticsInsightsCrew()
+                logger.info("Agent framework initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize agent framework: {str(e)}")
+                self.agents_enabled = False
+                
         # Kuwait-specific configurations
         self.kuwait_context = {
             'country': 'Kuwait',
@@ -106,6 +128,49 @@ class AIService:
             Dict containing generated content, translations, and hashtags
         """
         try:
+            # Check if should use agents for this request
+            if self._should_use_agents(prompt, {
+                'platform': platform,
+                'business_type': business_type,
+                'additional_context': additional_context
+            }):
+                # Extract restaurant info from context
+                restaurant_info = {
+                    'name': additional_context.get('restaurant_name', 'Restaurant') if additional_context else 'Restaurant',
+                    'cuisine_type': business_type or 'general',
+                    'area': additional_context.get('area', 'Kuwait') if additional_context else 'Kuwait'
+                }
+                
+                # Determine use case from prompt
+                use_case = 'single_post'
+                if 'campaign' in prompt.lower():
+                    if 'ramadan' in prompt.lower():
+                        use_case = 'ramadan_campaign'
+                    elif 'launch' in prompt.lower():
+                        use_case = 'product_launch'
+                    else:
+                        use_case = 'campaign'
+                elif 'weekly' in prompt.lower() or 'week' in prompt.lower():
+                    use_case = 'weekly_content'
+                elif 'analyze' in prompt.lower() or 'performance' in prompt.lower():
+                    use_case = 'performance_analysis'
+                
+                # Use agents
+                agent_result = self.generate_with_agents(
+                    prompt=prompt,
+                    use_case=use_case,
+                    restaurant_info=restaurant_info,
+                    platform=platform,
+                    tone=tone,
+                    include_arabic=include_arabic,
+                    include_hashtags=include_hashtags
+                )
+                
+                # Return agent result if successful
+                if agent_result.get('success'):
+                    return agent_result
+                    
+            # Continue with regular generation
             # Build comprehensive prompt
             system_prompt = self._build_system_prompt(platform, tone, business_type)
             user_prompt = self._build_user_prompt(prompt, platform, additional_context)
@@ -167,7 +232,7 @@ class AIService:
             
             if self.default_provider == 'anthropic' and self.anthropic_api_key:
                 response = self.anthropic_client.messages.create(
-                    model="claude-3-sonnet-20240229",
+                    model="claude-3-5-sonnet-20241022",
                     max_tokens=1000,
                     messages=[{"role": "user", "content": translation_prompt}]
                 )
@@ -212,7 +277,7 @@ class AIService:
             
             if self.default_provider == 'anthropic' and self.anthropic_api_key:
                 response = self.anthropic_client.messages.create(
-                    model="claude-3-sonnet-20240229",
+                    model="claude-3-5-sonnet-20241022",
                     max_tokens=500,
                     messages=[{"role": "user", "content": hashtag_prompt}]
                 )
@@ -277,7 +342,7 @@ class AIService:
             
             if self.default_provider == 'anthropic' and self.anthropic_api_key:
                 response = self.anthropic_client.messages.create(
-                    model="claude-3-sonnet-20240229",
+                    model="claude-3-5-sonnet-20241022",
                     max_tokens=1000,
                     messages=[{"role": "user", "content": prompt}]
                 )
@@ -391,23 +456,24 @@ class AIService:
         return user_prompt
         
     def _generate_with_openai(self, system_prompt: str, user_prompt: str) -> str:
-        """Generate content using OpenAI"""
+        """Generate content using OpenAI GPT-4 Turbo"""
         response = self.openai_client.chat.completions.create(
-            model="gpt-4-turbo-preview",
+            model="gpt-4-turbo-preview",  # Latest GPT-4 Turbo
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            max_tokens=1000,
+            max_tokens=2000,  # Increased for better responses
             temperature=0.8
         )
         return response.choices[0].message.content.strip()
         
     def _generate_with_claude(self, system_prompt: str, user_prompt: str) -> str:
-        """Generate content using Claude"""
+        """Generate content using Claude 3.5 Sonnet (Latest)"""
         response = self.anthropic_client.messages.create(
-            model="claude-3-sonnet-20240229",
-            max_tokens=1000,
+            model="claude-3-5-sonnet-20241022",  # Updated to latest model
+            max_tokens=2000,  # Increased for better responses
+            temperature=0.8,  # Better for creative content
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}]
         )
@@ -461,6 +527,154 @@ class AIService:
             optimal_times['best_days'] = ['Tuesday', 'Thursday', 'Friday']
             
         return optimal_times
+    
+    # Agent-powered methods
+    def generate_with_agents(self,
+                           prompt: str,
+                           use_case: str = 'single_post',
+                           restaurant_info: Optional[Dict] = None,
+                           campaign_info: Optional[Dict] = None,
+                           **kwargs) -> Dict:
+        """
+        Generate content using multi-agent system for complex tasks
+        
+        Args:
+            prompt: Main content request
+            use_case: Type of content needed (single_post, weekly_content, campaign, etc.)
+            restaurant_info: Restaurant details
+            campaign_info: Campaign specific information
+            
+        Returns:
+            Generated content with full campaign/post details
+        """
+        if not self.agents_enabled:
+            # Fallback to regular generation
+            return self.generate_content(prompt, **kwargs)
+        
+        try:
+            restaurant_info = restaurant_info or {
+                'name': 'Restaurant',
+                'cuisine_type': 'general',
+                'area': 'Kuwait'
+            }
+            
+            if use_case == 'single_post':
+                result = self.content_crew.create_single_post(
+                    restaurant_info=restaurant_info,
+                    post_type=kwargs.get('post_type', 'regular'),
+                    special_requirements=kwargs.get('requirements', [])
+                )
+            elif use_case == 'weekly_content':
+                result = self.content_crew.create_weekly_content(
+                    restaurant_info=restaurant_info,
+                    week_theme=kwargs.get('theme')
+                )
+            elif use_case == 'ramadan_campaign':
+                result = self.campaign_crew.create_ramadan_campaign(
+                    restaurant_info=restaurant_info,
+                    budget=kwargs.get('budget'),
+                    duration_days=kwargs.get('duration', 30)
+                )
+            elif use_case == 'product_launch':
+                result = self.campaign_crew.create_new_launch_campaign(
+                    restaurant_info=restaurant_info,
+                    product_info=campaign_info or {'name': 'New Product', 'type': 'dish'},
+                    campaign_duration=kwargs.get('duration', 14)
+                )
+            elif use_case == 'performance_analysis':
+                result = self.analytics_crew.analyze_campaign_performance(
+                    restaurant_info=restaurant_info,
+                    campaign_data=campaign_info or {},
+                    comparison_period=kwargs.get('comparison_period')
+                )
+            else:
+                # Default to single post
+                result = self.content_crew.create_single_post(
+                    restaurant_info=restaurant_info,
+                    post_type='regular'
+                )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Agent generation failed: {str(e)}")
+            # Fallback to regular generation
+            return self.generate_content(prompt, **kwargs)
+    
+    def analyze_competitors(self, 
+                          restaurant_info: Dict,
+                          competitors: List[str],
+                          time_period: int = 30) -> Dict:
+        """Analyze competitive landscape using agent crew"""
+        if not self.agents_enabled:
+            return {
+                'success': False,
+                'message': 'Agent framework not available',
+                'suggestion': 'Enable agents for competitive analysis'
+            }
+        
+        try:
+            return self.analytics_crew.competitive_landscape_analysis(
+                restaurant_info=restaurant_info,
+                competitors=competitors,
+                time_period=time_period
+            )
+        except Exception as e:
+            logger.error(f"Competitive analysis failed: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def get_monthly_insights(self,
+                           restaurant_info: Dict,
+                           month: str,
+                           year: int) -> Dict:
+        """Get comprehensive monthly performance review"""
+        if not self.agents_enabled:
+            return {
+                'success': False,
+                'message': 'Agent framework not available'
+            }
+        
+        try:
+            return self.analytics_crew.monthly_performance_review(
+                restaurant_info=restaurant_info,
+                month=month,
+                year=year
+            )
+        except Exception as e:
+            logger.error(f"Monthly review failed: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def _should_use_agents(self, prompt: str, kwargs: Dict) -> bool:
+        """Determine if request should use agent system"""
+        if not self.agents_enabled:
+            return False
+        
+        # Keywords that trigger agent usage
+        agent_triggers = [
+            'campaign', 'weekly', 'monthly', 'analyze', 'competitor',
+            'comprehensive', 'full', 'complete', 'strategy', 'plan',
+            'ramadan', 'launch', 'performance', 'insights'
+        ]
+        
+        # Check prompt for triggers
+        prompt_lower = prompt.lower()
+        if any(trigger in prompt_lower for trigger in agent_triggers):
+            return True
+        
+        # Check if complex requirements
+        if kwargs.get('duration') and kwargs['duration'] > 1:
+            return True
+        
+        if kwargs.get('multiple_posts') or kwargs.get('campaign'):
+            return True
+        
+        return False
 
 
 # Note: No singleton instance created here

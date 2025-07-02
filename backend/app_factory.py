@@ -43,6 +43,16 @@ def create_app(config_name='development'):
     # Configure Celery
     # configure_celery(app)  # Disabled - celery not configured
     
+    # Initialize Telegram bot manager after app is fully configured
+    with app.app_context():
+        try:
+            from services.telegram_bot_manager import get_bot_manager
+            bot_manager = get_bot_manager()
+            bot_manager.initialize_from_database()
+            app.logger.info("Initialized Telegram bot manager")
+        except Exception as e:
+            app.logger.warning(f"Could not initialize Telegram bots: {e}")
+    
     return app
 
 
@@ -140,10 +150,11 @@ def register_blueprints(app):
     from routes.analytics import analytics_bp
     from routes.translations import translations_bp
     from routes.social import social_bp
-    from routes.telegram import telegram_bp
+    # from routes.telegram import telegram_bp  # Temporarily disabled - needs update for new telegram API
     from routes.payments import payments_bp
     from routes.prayer_times import prayer_times_bp
     from routes.ai_content import ai_content_bp
+    from routes.ai_agents import ai_agents_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(owner_bp, url_prefix='/api/owner')
@@ -154,11 +165,12 @@ def register_blueprints(app):
     app.register_blueprint(content_enhanced_bp, url_prefix='/api/content-fb')
     app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
     app.register_blueprint(social_bp, url_prefix='/api/social')
-    app.register_blueprint(telegram_bp, url_prefix='/api/telegram')
+    # app.register_blueprint(telegram_bp, url_prefix='/api/telegram')  # Temporarily disabled
     app.register_blueprint(payments_bp, url_prefix='/api/payments')
     app.register_blueprint(prayer_times_bp, url_prefix='/api/prayer-times')
     app.register_blueprint(translations_bp, url_prefix='/api')
     app.register_blueprint(ai_content_bp)  # New AI content routes
+    app.register_blueprint(ai_agents_bp)  # AI agent-powered routes
 
 
 def register_error_handlers(app):

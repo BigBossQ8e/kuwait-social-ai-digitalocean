@@ -45,7 +45,7 @@ from .reporting_models import (
 )
 from .translation import Translation, TranslationHistory
 from .theme import ThemeSetting, ThemePreset, ThemeHistory
-from .telegram import TelegramAccount
+from .telegram import TelegramAccount, PostApproval, TelegramCommand
 
 # Export all models
 __all__ = [
@@ -92,6 +92,6 @@ __all__ = [
     # Translation and theme models
     'Translation', 'TranslationHistory', 'ThemeSetting', 'ThemePreset', 'ThemeHistory',
     
-    # Telegram model
-    'TelegramAccount'
+    # Telegram models
+    'TelegramAccount', 'PostApproval', 'TelegramCommand'
 ]

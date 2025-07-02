@@ -13,4 +13,4 @@ load_dotenv()
 application = create_app(os.getenv('FLASK_ENV', 'production'))
 
 if __name__ == "__main__":
-    application.run()
+    application.run(port=5001)

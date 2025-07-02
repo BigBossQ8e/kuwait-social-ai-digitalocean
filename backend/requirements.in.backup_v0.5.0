@@ -1,0 +1,97 @@
+# Kuwait Social AI - Core Requirements
+# This is the source file for pip-compile
+
+# Core Framework
+Flask
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-CORS
+Flask-JWT-Extended
+Flask-Limiter[redis]
+redis
+
+# Database
+psycopg2-binary
+SQLAlchemy
+alembic
+
+# Validation & Serialization
+marshmallow
+marshmallow-sqlalchemy
+python-dotenv
+
+# Authentication & Security
+werkzeug
+cryptography
+PyJWT
+
+# Redis & Caching
+celery
+
+# AI & Content Generation
+openai
+anthropic
+Pillow
+opencv-python
+
+# AI Agent Frameworks
+crewai
+langchain
+langchain-openai
+langchain-anthropic
+langchain-community
+
+# Language Processing
+deep-translator
+langdetect
+arabic-reshaper
+python-bidi
+
+# Security & Sanitization
+bleach
+tinycss2
+zxcvbn
+
+# File Processing
+PyPDF2
+python-docx
+python-magic
+
+# Social Media APIs
+requests
+requests-oauthlib
+
+# Telegram Bot
+python-telegram-bot
+
+# Email
+Flask-Mail
+
+# Monitoring & Logging
+python-json-logger
+sentry-sdk[flask]
+psutil
+APScheduler
+
+# Date & Time
+pytz
+python-dateutil
+
+# Development & Testing
+pytest
+pytest-flask
+pytest-cov
+black
+flake8
+click
+tabulate
+
+# Production Server
+gunicorn
+gevent
+
+# Utilities
+python-slugify
+validators
+phonenumbers
+cachetools
